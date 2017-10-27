@@ -23,6 +23,11 @@ class Deck {
   setupCards = () => {
     this.cards = cards.map(card => new Card(card))
   }
+
+  moveCardToHand = (card, hand) => {
+    this.cards = this.cards.filter(item => item.id !== card.id)
+    hand.cards = hand.cards.concat(card)
+  }
 }
 
 export default Deck

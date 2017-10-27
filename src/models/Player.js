@@ -8,6 +8,10 @@ class Player {
   setupDeck(deck) {
     this.deck = deck
   }
+
+  setupHand(hand) {
+    this.hand = hand
+  }
 }
 
 export default Player

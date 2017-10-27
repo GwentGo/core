@@ -4,6 +4,7 @@ import originalCards from '../sources/cards'
 import Player from '../models/Player'
 import Card from '../models/Card'
 import Deck from '../models/Deck'
+import Hand from '../models/Hand'
 
 const randomCards = cards => {
   const arr = []
@@ -24,8 +25,11 @@ class Board {
   constructor() {
     this.setupPlayer()
 
-    this.setupDeck(this.player.geralt)
-    this.setupDeck(this.player.letho)
+    Object.keys(this.player).forEach(key => {
+      const player = this.player[key]
+      this.setupDeck(player)
+      this.setupHand(player)
+    })
   }
 
   setupPlayer = () => {
@@ -36,6 +40,11 @@ class Board {
   setupDeck = player => {
     const deck = new Deck({ cards: randomCards(originalCards).map(card => new Card(card)) })
     player.setupDeck(deck)
+  }
+
+  setupHand = player => {
+    const hand = new Hand()
+    player.setupHand(hand)
   }
 }
 

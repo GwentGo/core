@@ -4407,6 +4407,7 @@ const cards = {
 }
 
 export default Object.keys(cards).map(key => ({
+  id: Math.random(),
   name: key,
   ...cards[key],
 }))

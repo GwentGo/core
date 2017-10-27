@@ -1,9 +1,7 @@
-class Deck {
-  cards = []
-
+class Card {
   constructor(props) {
     Object.assign(this, props)
   }
 }
 
-export default Deck
+export default Card

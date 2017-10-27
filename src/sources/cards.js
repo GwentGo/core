@@ -1,4 +1,4 @@
-export default cards = {
+const cards = {
   "yarpen_zigrin": {
     "factoin": "Scoia'tael",
     "power": 7,
@@ -4405,3 +4405,8 @@ export default cards = {
     ]
   }
 }
+
+export default Object.keys(cards).map(key => ({
+  name: key,
+  ...cards[key],
+}))

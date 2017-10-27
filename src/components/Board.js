@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Grid from 'material-ui/Grid'
 
 import BoardController from '../controller/Board'
 import Card from './Card'
@@ -21,9 +22,14 @@ class Board extends Component {
               <h3>{player.name}</h3>
               <p>Win: {player.win}, Lose: {player.lose}, Rate: {rate * 100}%</p>
               <p>Deck: {player.deck.cards.length}</p>
-              {player.deck.cards.map(card => (
-                <Card key={card.name} card={card} />
-              ))}
+              <Grid container>
+                {player.deck.cards.map(card => (
+                  <Grid key={card.name} item>
+                    <Card card={card} />
+                  </Grid>
+                ))}
+              </Grid>
+              <br />
               <hr />
             </div>
           )

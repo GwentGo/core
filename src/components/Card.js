@@ -1,15 +1,20 @@
 import React, { Component } from 'react'
+import Card, { CardContent } from 'material-ui/Card'
+import Typography from 'material-ui/Typography'
 
-class Card extends Component {
+class CardComponent extends Component {
   render() {
     const { card } = this.props
 
     return (
-      <div>
-        <h5>{card.name_en}</h5>
-      </div>
+      <Card>
+        <CardContent>
+          <Typography type="body1">{card.type}</Typography>
+          <Typography type="title">{card.name_en}</Typography>
+        </CardContent>
+      </Card>
     )
   }
 }
 
-export default Card
+export default CardComponent

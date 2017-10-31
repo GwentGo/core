@@ -1,47 +1,60 @@
 import React, { Component } from 'react'
 import Grid from 'material-ui/Grid'
+import { connect } from 'react-redux'
 
-import BoardController from '../controller/Board'
 import Card from './Card'
+import *  as actions from '../actions'
+import players from '../sources/players'
+import decks from '../sources/decks'
+import cards from '../sources/cards'
 
 class Board extends Component {
-  state = {
-    board: new BoardController()
+  componentDidMount() {
+    this.props.receivePlayers(players)
+    this.props.receiveDecks(decks)
+    this.props.receiveCards(cards)
   }
 
   render() {
-    const { board } = this.state
+    const { players, decks, cards } = this.props
 
     return (
       <div>
-        {Object.keys(board.player).map(key => {
-          const player = board.player[key]
+        {players.map(player => {
           const rate = (player.win / (player.win + player.lose)).toFixed(2)
+          const deck = decks.find(deck => deck.playerId === player.id)
+          const deckCards = cards.filter(card => card.deckId === deck.id)
+          const playerCards = cards.filter(card => card.playerId === player.id)
+
           return (
-            <div key={key}>
+            <div key={player.id}>
 
               <div tag="player-info">
                 <h3>{player.name}</h3>
                 <p>Win: {player.win}, Lose: {player.lose}, Rate: {rate * 100}%</p>
               </div>
 
-              <div tag="deck-info">
-                <p>Deck: {player.deck.cards.length}</p>
+              <div tag="deck-cards">
+                <p>Deck cards: {deckCards.length}</p>
                 <Grid container>
-                  {player.deck.cards.map(card => (
-                    <Grid key={card.name} item>
-                      <Card card={card} />
+                  {deckCards.map(card => (
+                    <Grid key={card.id} item>
+                      <div onClick={() => this.props.updateCard({...card, deckId: '', playerId: player.id })}>
+                        <Card card={card} />
+                      </div>
                     </Grid>
                   ))}
                 </Grid>
               </div>
 
-              <div tag="hand-info">
-                <p>Hand: {player.hand.cards.length}</p>
+              <div tag="player-cards">
+                <p>Player cards: {playerCards.length}</p>
                 <Grid container>
-                  {player.hand.cards.map(card => (
-                    <Grid key={card.name} item>
-                      <Card card={card} />
+                  {playerCards.map(card => (
+                    <Grid key={card.id} item>
+                      <div onClick={() => this.props.updateCard({...card, deckId: deck.id, playerId: '' })}>
+                        <Card card={card} />
+                      </div>
                     </Grid>
                   ))}
                 </Grid>
@@ -57,4 +70,10 @@ class Board extends Component {
   }
 }
 
-export default Board
+const mapStateToProps = ({ players, decks, cards }) => ({
+  players,
+  decks,
+  cards,
+})
+
+export default connect(mapStateToProps, actions)(Board)

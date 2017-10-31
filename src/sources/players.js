@@ -1,11 +1,13 @@
-export const geralt = {
+const players = [{
+  id: 1,
   name: 'Geralt',
   win: 215,
   lose: 63,
-}
-
-export const letho = {
+}, {
+  id: 2,
   name: 'Letho',
   win: 371,
   lose: 72,
-}
+}]
+
+export default players

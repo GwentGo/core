@@ -9,8 +9,7 @@ class CardComponent extends Component {
     return (
       <Card>
         <CardContent>
-          <Typography type="body1">{card.id}</Typography>
-          <Typography type="body2">{card.type}</Typography>
+          <Typography type="body2">({card.power}) {card.type}</Typography>
           <Typography type="title">{card.name_en}</Typography>
         </CardContent>
       </Card>

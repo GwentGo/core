@@ -14,6 +14,10 @@ class Board extends Component {
     this.props.fetchCards()
   }
 
+  calculate = cards => {
+    return cards.reduce((acc, card) => (acc + card.power), 0)
+  }
+
   render() {
     const { players, cards } = this.props
 
@@ -57,7 +61,7 @@ class Board extends Component {
                 <Grid container>
                   {handCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, deckId: deck.id, handId: '' })}>
+                      <div onClick={() => this.props.updateCard({...card, handId: '', deskId: desk.id })}>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -66,7 +70,7 @@ class Board extends Component {
               </div>
 
               <div tag="desk-cards">
-                <h4>Desk cards: {deskCards.length}</h4>
+                <h4>Desk cards: {deskCards.length}, Power: ({this.calculate(deskCards)})</h4>
                 <Grid container>
                   {deskCards.map(card => (
                     <Grid key={card.id} item>

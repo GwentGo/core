@@ -1,4 +1,4 @@
-const decks = [{
+const desks = [{
   id: 1,
   index: 0,
 }, {
@@ -6,4 +6,4 @@ const decks = [{
   index: 1,
 }]
 
-export default decks
+export default desks

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
-import Card from './examples/Card'
-import Grid from './examples/Grid'
+// import Card from './examples/Card'
+// import Grid from './examples/Grid'
 
 import Board from './Board'
 

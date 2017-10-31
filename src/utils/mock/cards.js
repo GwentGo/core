@@ -12,7 +12,7 @@ const randomCards = cards => {
 
 const cards = randomCards(originalCards)
 
-const cards1 = cards.slice(0, 25).map(card => ({ deckId: 1, playerId: '', ...card }))
-const cards2 = cards.slice(26).map(card => ({ deckId: 2, playerId: '', ...card }))
+const cards1 = cards.slice(0, 25).map(card => ({ deckId: 1, handId: '', ...card }))
+const cards2 = cards.slice(25).map(card => ({ deckId: 2, handId: '', ...card }))
 
 export default cards1.concat(cards2)

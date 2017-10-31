@@ -4,27 +4,32 @@ import { connect } from 'react-redux'
 
 import Card from './Card'
 import *  as actions from '../actions'
-import players from '../sources/players'
 import decks from '../sources/decks'
-import cards from '../sources/cards'
+import hands from '../sources/hands'
+import desks from '../sources/desks'
 
 class Board extends Component {
   componentDidMount() {
-    this.props.receivePlayers(players)
-    this.props.receiveDecks(decks)
-    this.props.receiveCards(cards)
+    this.props.fetchPlayers()
+    this.props.fetchCards()
   }
 
   render() {
-    const { players, decks, cards } = this.props
+    const { players, cards } = this.props
 
     return (
       <div>
-        {players.map(player => {
+        {players.map((player, index) => {
           const rate = (player.win / (player.win + player.lose)).toFixed(2)
-          const deck = decks.find(deck => deck.playerId === player.id)
+
+          const deck = decks.find(deck => deck.index === index)
           const deckCards = cards.filter(card => card.deckId === deck.id)
-          const playerCards = cards.filter(card => card.playerId === player.id)
+
+          const hand = hands.find(hand => hand.index === index)
+          const handCards = cards.filter(card => card.handId === hand.id)
+
+          const desk = desks.find(desk => desk.index === index)
+          const deskCards = cards.filter(card => card.deskId === desk.id)
 
           return (
             <div key={player.id}>
@@ -35,11 +40,11 @@ class Board extends Component {
               </div>
 
               <div tag="deck-cards">
-                <p>Deck cards: {deckCards.length}</p>
+                <h4>Deck cards: {deckCards.length}</h4>
                 <Grid container>
                   {deckCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, deckId: '', playerId: player.id })}>
+                      <div onClick={() => this.props.updateCard({...card, deckId: '', handId: player.id })}>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -47,12 +52,25 @@ class Board extends Component {
                 </Grid>
               </div>
 
-              <div tag="player-cards">
-                <p>Player cards: {playerCards.length}</p>
+              <div tag="hand-cards">
+                <h4>Hand cards: {handCards.length}</h4>
                 <Grid container>
-                  {playerCards.map(card => (
+                  {handCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, deckId: deck.id, playerId: '' })}>
+                      <div onClick={() => this.props.updateCard({...card, deckId: deck.id, handId: '' })}>
+                        <Card card={card} />
+                      </div>
+                    </Grid>
+                  ))}
+                </Grid>
+              </div>
+
+              <div tag="desk-cards">
+                <h4>Desk cards: {deskCards.length}</h4>
+                <Grid container>
+                  {deskCards.map(card => (
+                    <Grid key={card.id} item>
+                      <div>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -72,7 +90,6 @@ class Board extends Component {
 
 const mapStateToProps = ({ players, decks, cards }) => ({
   players,
-  decks,
   cards,
 })
 

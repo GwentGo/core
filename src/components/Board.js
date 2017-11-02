@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 
 import Card from './Card'
 import *  as actions from '../actions'
-import decks from '../sources/decks'
-import hands from '../sources/hands'
-import desks from '../sources/desks'
+import { decks, hands, tables } from '../sources'
 
 class Board extends Component {
   componentDidMount() {
@@ -32,8 +30,8 @@ class Board extends Component {
           const hand = hands.find(hand => hand.index === index)
           const handCards = cards.filter(card => card.handIndex === hand.index)
 
-          const desk = desks.find(desk => desk.index === index)
-          const deskCards = cards.filter(card => card.deskIndex === desk.index)
+          const table = tables.find(table => table.index === index)
+          const tableCards = cards.filter(card => card.tableIndex === table.index)
 
           return (
             <div key={player.id}>
@@ -61,7 +59,7 @@ class Board extends Component {
                 <Grid container>
                   {handCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, handIndex: '', deskIndex: desk.index })}>
+                      <div onClick={() => this.props.updateCard({...card, handIndex: '', tableIndex: table.index })}>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -69,10 +67,10 @@ class Board extends Component {
                 </Grid>
               </div>
 
-              <div tag="desk-cards">
-                <h4>Desk cards: {deskCards.length}, Power: ({this.calculate(deskCards)})</h4>
+              <div tag="table-cards">
+                <h4>Table cards: {tableCards.length}, Power: ({this.calculate(tableCards)})</h4>
                 <Grid container>
-                  {deskCards.map(card => (
+                  {tableCards.map(card => (
                     <Grid key={card.id} item>
                       <div>
                         <Card card={card} />

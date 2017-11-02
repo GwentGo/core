@@ -8,7 +8,7 @@ cards = [{
   id: xxx,
   deckIndex: xxx,
   handIndex: xxx,
-  deskIndex: xxx,
+  tableIndex: xxx,
 }]
 
 */

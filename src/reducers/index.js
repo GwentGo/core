@@ -6,9 +6,9 @@ players = [{
 
 cards = [{
   id: xxx,
-  deckId: xxx,
-  handId: xxx,
-  deskId: xxx,
+  deckIndex: xxx,
+  handIndex: xxx,
+  deskIndex: xxx,
 }]
 
 */

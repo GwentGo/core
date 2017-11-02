@@ -27,13 +27,13 @@ class Board extends Component {
           const rate = (player.win / (player.win + player.lose)).toFixed(2)
 
           const deck = decks.find(deck => deck.index === index)
-          const deckCards = cards.filter(card => card.deckId === deck.id)
+          const deckCards = cards.filter(card => card.deckIndex === deck.index)
 
           const hand = hands.find(hand => hand.index === index)
-          const handCards = cards.filter(card => card.handId === hand.id)
+          const handCards = cards.filter(card => card.handIndex === hand.index)
 
           const desk = desks.find(desk => desk.index === index)
-          const deskCards = cards.filter(card => card.deskId === desk.id)
+          const deskCards = cards.filter(card => card.deskIndex === desk.index)
 
           return (
             <div key={player.id}>
@@ -48,7 +48,7 @@ class Board extends Component {
                 <Grid container>
                   {deckCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, deckId: '', handId: player.id })}>
+                      <div onClick={() => this.props.updateCard({...card, deckIndex: '', handIndex: hand.index })}>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -61,7 +61,7 @@ class Board extends Component {
                 <Grid container>
                   {handCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, handId: '', deskId: desk.id })}>
+                      <div onClick={() => this.props.updateCard({...card, handIndex: '', deskIndex: desk.index })}>
                         <Card card={card} />
                       </div>
                     </Grid>

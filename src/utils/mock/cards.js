@@ -1,3 +1,3 @@
-import cards from './originalCards'
+import cards from './developingCards'
 
 export default cards

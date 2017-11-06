@@ -8,7 +8,9 @@ cards = [{
   id: xxx,
   deckIndex: xxx,
   handIndex: xxx,
-  tableIndex: xxx,
+  fighterIndex: xxx,
+  archerIndex: xxx,
+  throwerIndex: xxx,
 }]
 
 */

@@ -19,12 +19,14 @@ const originalCards = {
 const cards1 = [{
   id: uuid(),
   deckIndex: 0,
+  name: 'eredin',
   ...originalCards['eredin'],
 }]
 
 const cards2 = [{
   id: uuid(),
   deckIndex: 1,
+  name: 'eredin',
   ...originalCards['eredin'],
 }]
 

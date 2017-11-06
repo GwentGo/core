@@ -4,16 +4,26 @@ import { connect } from 'react-redux'
 
 import Card from './Card'
 import *  as actions from '../actions'
-import { decks, hands, tables } from '../sources'
+import { decks, hands, fighters, archers, throwers } from '../sources/holders'
+import { subject, subscribe } from '../sources/subject'
 
 class Board extends Component {
   componentDidMount() {
     this.props.fetchPlayers()
     this.props.fetchCards()
+
+    subscribe()
   }
 
   calculate = cards => {
     return cards.reduce((acc, card) => (acc + card.power), 0)
+  }
+
+  act = action => {
+    const {out, into, card} = action
+
+    this.props.updateCard({...card, [`${out.type}Index`]: '', [`${into.type}Index`]: into.index })
+    subject.next(action)
   }
 
   render() {
@@ -30,9 +40,16 @@ class Board extends Component {
           const hand = hands.find(hand => hand.index === index)
           const handCards = cards.filter(card => card.handIndex === hand.index)
 
-          const table = tables.find(table => table.index === index)
-          const tableCards = cards.filter(card => card.tableIndex === table.index)
+          const fighter = fighters.find(fighter => fighter.index === index)
+          const fighterCards = cards.filter(card => card.fighterIndex === fighter.index)
 
+          const archer = archers.find(archer => archer.index === index)
+          const archerCards = cards.filter(card => card.archerIndex === archer.index)
+
+          const thrower = throwers.find(thrower => thrower.index === index)
+          const throwerCards = cards.filter(card => card.throwerIndex === thrower.index)
+
+          const tableCards = fighterCards.concat(archerCards, throwerCards)
           return (
             <div key={player.id}>
 
@@ -59,7 +76,7 @@ class Board extends Component {
                 <Grid container>
                   {handCards.map(card => (
                     <Grid key={card.id} item>
-                      <div onClick={() => this.props.updateCard({...card, handIndex: '', tableIndex: table.index })}>
+                      <div onClick={() => this.act({ out: hand, into: fighter, card })}>
                         <Card card={card} />
                       </div>
                     </Grid>
@@ -69,8 +86,32 @@ class Board extends Component {
 
               <div tag="table-cards">
                 <h4>Table cards: {tableCards.length}, Power: ({this.calculate(tableCards)})</h4>
+                
+                <p>Fighters:</p>
                 <Grid container>
-                  {tableCards.map(card => (
+                  {fighterCards.map(card => (
+                    <Grid key={card.id} item>
+                      <div>
+                        <Card card={card} />
+                      </div>
+                    </Grid>
+                  ))}
+                </Grid>
+
+                <p>Archers:</p>
+                <Grid container>
+                  {archerCards.map(card => (
+                    <Grid key={card.id} item>
+                      <div>
+                        <Card card={card} />
+                      </div>
+                    </Grid>
+                  ))}
+                </Grid>
+
+                <p>Throwers:</p>
+                <Grid container>
+                  {throwerCards.map(card => (
                     <Grid key={card.id} item>
                       <div>
                         <Card card={card} />

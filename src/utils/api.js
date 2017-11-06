@@ -1,5 +1,5 @@
 import players from './mock/players'
-import cards from './mock/cards'
+import cards from './mock/developing'
 
 const fetch = source => {
   return new Promise((resolve, reject) => {

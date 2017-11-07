@@ -3,6 +3,8 @@ import * as api from '../utils/api'
 export const RECEIVE_PLAYERS = 'RECEIVE_PLAYERS'
 export const RECEIVE_CARDS = 'RECEIVE_CARDS'
 export const UPDATE_CARD = 'UPDATE_CARD'
+export const ADD_CARDS = 'ADD_CARDS'
+export const REMOVE_CARDS = 'REMOVE_CARDS'
 
 export const receivePlayers = players => ({ type: RECEIVE_PLAYERS, players })
 
@@ -21,3 +23,7 @@ export const fetchCards = () => dispatch => {
 }
 
 export const updateCard = card => ({ type: UPDATE_CARD, card })
+
+export const addCards = cards => ({ type: ADD_CARDS, cards })
+
+export const removeCards = cards => ({ type: REMOVE_CARDS, cards })

@@ -37,3 +37,11 @@ export const throwers = [{
   index: 1,
   type: 'thrower',
 }]
+
+export const pickings = [{
+  index: 0,
+  type: 'picking',
+}, {
+  index: 1,
+  type: 'picking',
+}]

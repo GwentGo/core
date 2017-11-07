@@ -3,8 +3,8 @@ import Grid from 'material-ui/Grid'
 import { connect } from 'react-redux'
 
 import Card from './Card'
-import *  as actions from '../actions'
-import { decks, hands, fighters, archers, throwers } from '../sources/holders'
+import * as actions from '../actions'
+import * as holders from '../sources/holders'
 import { subject, subscribe } from '../sources/subject'
 
 class Board extends Component {
@@ -34,22 +34,26 @@ class Board extends Component {
         {players.map((player, index) => {
           const rate = (player.win / (player.win + player.lose)).toFixed(2)
 
-          const deck = decks.find(deck => deck.index === index)
+          const deck = holders.decks.find(deck => deck.index === index)
           const deckCards = cards.filter(card => card.deckIndex === deck.index)
 
-          const hand = hands.find(hand => hand.index === index)
+          const hand = holders.hands.find(hand => hand.index === index)
           const handCards = cards.filter(card => card.handIndex === hand.index)
 
-          const fighter = fighters.find(fighter => fighter.index === index)
+          const fighter = holders.fighters.find(fighter => fighter.index === index)
           const fighterCards = cards.filter(card => card.fighterIndex === fighter.index)
 
-          const archer = archers.find(archer => archer.index === index)
+          const archer = holders.archers.find(archer => archer.index === index)
           const archerCards = cards.filter(card => card.archerIndex === archer.index)
 
-          const thrower = throwers.find(thrower => thrower.index === index)
+          const thrower = holders.throwers.find(thrower => thrower.index === index)
           const throwerCards = cards.filter(card => card.throwerIndex === thrower.index)
 
           const tableCards = fighterCards.concat(archerCards, throwerCards)
+
+          const picking = holders.pickings.find(picking => picking.index === index)
+          const pickingCards = cards.filter(card => card.pickingIndex === picking.index)
+
           return (
             <div key={player.id}>
 
@@ -120,6 +124,24 @@ class Board extends Component {
                   ))}
                 </Grid>
               </div>
+
+              {pickingCards.length > 0 && (
+                <div tag="picking-cards">
+                  <h4>Picking cards: {pickingCards.length}</h4>
+                  <Grid container>
+                    {pickingCards.map(card => (
+                      <Grid key={card.id} item>
+                        <div onClick={() => {
+                          this.act({ out: picking, into: fighter, card })
+                          this.props.removeCards(pickingCards.filter(c => c.id !== card.id))
+                        }}>
+                          <Card card={card} />
+                        </div>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </div>
+              )}
 
               <br />
               <hr />

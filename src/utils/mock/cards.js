@@ -2,10 +2,9 @@ import uuid from 'uuid/v4'
 
 import originalCards from '../originalCards'
 
-const sourceCards = Object.keys(originalCards).map(key => ({
+const sourceCards = originalCards.map(card => ({
   id: uuid(),
-  name: key,
-  ...originalCards[key],
+  ...card,
 }))
 
 const randomCards = cards => {

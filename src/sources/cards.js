@@ -1,5 +1,23 @@
+import uuid from 'uuid/v4'
+
+import originalCards from '../utils/originalCards'
+import { store } from './store'
+import * as actions from '../actions'
+
 export const eredin = {
-  tableIn: card => {
-    console.log(card);
+  tableIn: action => {
+    const associationCards = originalCards.filter(card => card.name.indexOf('wild_hunt') !== -1 && card.type === 'Bronze')
+
+    store.dispatch(actions.addCards(associationCards.map(card => ({
+      id: uuid(),
+      pickingIndex: action.into.index,
+      ...card,
+    }))))
+  }
+}
+
+export const wild_hunt_hound = {
+  tableIn: action => {
+    // store.dispatch(actions.updateCard({ ...action.card,  }))
   }
 }

@@ -11,6 +11,7 @@ cards = [{
   fighterIndex: xxx,
   archerIndex: xxx,
   throwerIndex: xxx,
+  pickingIndex: xxx,
 }]
 
 */
@@ -21,6 +22,8 @@ import {
   RECEIVE_PLAYERS,
   RECEIVE_CARDS,
   UPDATE_CARD,
+  ADD_CARDS,
+  REMOVE_CARDS,
 } from '../actions'
 
 const players = (state = [], action) => {
@@ -38,6 +41,10 @@ const cards = (state = [], action) => {
       return action.cards || state
     case UPDATE_CARD:
       return state.map(card => card.id === action.card.id ? action.card : card)
+    case ADD_CARDS:
+      return state.concat(action.cards)
+    case REMOVE_CARDS:
+      return state.filter(card => action.cards.map(card => card['id']).indexOf(card.id) === -1)
     default:
       return state
   }

@@ -10,7 +10,7 @@ export const subscribe = () => {
       const {out, into, card} = action
 
       const outFunction = cards[card.name][`${out.type}Out`]
-      outFunction && outFunction(card)
+      outFunction && outFunction(action)
 
       let inFunction = null
       if (['fighter', 'archer', 'thrower'].indexOf(into.type) !== -1) {
@@ -18,7 +18,7 @@ export const subscribe = () => {
       } else {
         inFunction = cards[card.name][`${into.type}In`]
       }
-      inFunction && inFunction(card)
+      inFunction && inFunction(action)
     }
   })
 }

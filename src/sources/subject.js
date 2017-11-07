@@ -1,8 +1,8 @@
-import Rx from 'rxjs/Rx'
+import { Subject } from 'rxjs/Subject';
 
 import * as cards from './cards'
 
-export const subject = new Rx.Subject()
+export const subject = new Subject()
 
 export const subscribe = () => {
   subject.subscribe({

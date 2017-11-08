@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Grid from 'material-ui/Grid'
-import Button from 'material-ui/Button';
+import Button from 'material-ui/Button'
+import Paper from 'material-ui/Paper'
+import Typography from 'material-ui/Typography'
 
 import Card from './Card'
 import * as actions from '../actions'
@@ -104,12 +106,24 @@ class Board extends Component {
             <div key={player.id}>
 
               <div tag="player-info">
-                <h3>{player.name}</h3>
-                <p>Win: {player.win}, Lose: {player.lose}, Rate: {rate * 100}%</p>
+                <Typography type="headline" gutterBottom>
+                  {player.name}
+                </Typography>
+                <Typography type="caption" gutterBottom>
+                  Win: {player.win}, Lose: {player.lose}, Rate: {rate * 100}%
+                </Typography>
+                <Typography type="subheading" gutterBottom>
+                  Power: 12
+                </Typography>
+                <Button raised color="accent" onClick={() => console.log('sss')}>Abandon</Button>
               </div>
 
+              <br/>
+
               <div tag="deck-cards">
-                <h4>Deck cards: {deckCards.length}</h4>
+                <Typography type="subheading" gutterBottom>
+                  Deck cards: {deckCards.length}
+                </Typography>
                 <Grid container>
                   {deckCards.map(card => (
                     <Grid key={card.id} item>
@@ -119,15 +133,19 @@ class Board extends Component {
                 </Grid>
               </div>
 
+              <br/>
+
               <div tag="hand-cards">
-                <h4>
+                <Typography type="subheading" gutterBottom>
                   {ui.selecting && ui.selecting.holder && ui.selecting.holder.id === hand.id && ui.selecting.cards && ui.selecting.cards.length === 0 && (
                     <Button color="accent">select</Button>
                   )}
                   Hand cards: {handCards.length}
-                </h4>
+                </Typography>
                 {!selecting.hasDone && selecting.currentIndex === hand.index && (
-                  <p>Please replace your card, remain: {selecting.remain}</p>
+                  <Typography type="caption" gutterBottom>
+                    Please replace your card, remain: {selecting.remain}
+                  </Typography>
                 )}
                 <Grid container>
                   {handCards.map(card => {
@@ -150,10 +168,12 @@ class Board extends Component {
                 </Grid>
               </div>
 
+              <br/>
+
               <div tag="table-cards">
-                <h4>Table cards: {tableCards.length}, Power: ({this.calculate(tableCards)})</h4>
-                
-                <p>Fighters:</p>
+                <Typography type="subheading" gutterBottom>
+                  Fighters:
+                </Typography>
                 <Grid container>
                   {fighterCards.map(card => (
                     <Grid key={card.id} item>
@@ -164,7 +184,11 @@ class Board extends Component {
                   ))}
                 </Grid>
 
-                <p>Archers:</p>
+                <br/>
+
+                <Typography type="subheading" gutterBottom>
+                  Archers:
+                </Typography>
                 <Grid container>
                   {archerCards.map(card => (
                     <Grid key={card.id} item>
@@ -175,7 +199,11 @@ class Board extends Component {
                   ))}
                 </Grid>
 
-                <p>Throwers:</p>
+                <br/>
+
+                <Typography type="subheading" gutterBottom>
+                  Throwers:
+                </Typography>
                 <Grid container>
                   {throwerCards.map(card => (
                     <Grid key={card.id} item>
@@ -187,9 +215,13 @@ class Board extends Component {
                 </Grid>
               </div>
 
+              <br/>
+
               {pickingCards.length > 0 && (
                 <div tag="picking-cards">
-                  <h4>Picking cards: {pickingCards.length}</h4>
+                  <Typography type="subheading" gutterBottom>
+                    Picking cards: {pickingCards.length}
+                  </Typography>
                   <Grid container>
                     {pickingCards.map(card => (
                       <Grid key={card.id} item>
@@ -205,8 +237,11 @@ class Board extends Component {
                 </div>
               )}
 
-              <br />
-              <hr />
+              <br/>
+              <hr/>
+              <br/>
+              <br/>
+
             </div>
           )
         })}

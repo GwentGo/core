@@ -293,6 +293,112 @@ const cards2 = [{
   deckIndex: 1,
   name: 'eredin',
   ...originalCards['eredin'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_hound',
+  ...originalCards['wild_hunt_hound'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_hound',
+  ...originalCards['wild_hunt_hound'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_hound',
+  ...originalCards['wild_hunt_hound'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'biting_frost',
+  ...originalCards['biting_frost'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'biting_frost',
+  ...originalCards['biting_frost'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'biting_frost',
+  ...originalCards['biting_frost'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'ice_giant',
+  ...originalCards['ice_giant'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'ice_giant',
+  ...originalCards['ice_giant'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'ice_giant',
+  ...originalCards['ice_giant'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_rider',
+  ...originalCards['wild_hunt_rider'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_rider',
+  ...originalCards['wild_hunt_rider'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_rider',
+  ...originalCards['wild_hunt_rider'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'drowner',
+  ...originalCards['drowner'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'drowner',
+  ...originalCards['drowner'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'drowner',
+  ...originalCards['drowner'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_warrior',
+  ...originalCards['wild_hunt_warrior'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_warrior',
+  ...originalCards['wild_hunt_warrior'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'wild_hunt_warrior',
+  ...originalCards['wild_hunt_warrior'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'commander_s_horn',
+  ...originalCards['commander_s_horn'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'royal_decree',
+  ...originalCards['royal_decree'],
+}, {
+  id: uuid(),
+  deckIndex: 1,
+  name: 'cleaver',
+  ...originalCards['cleaver'],
 }]
+
 
 export default cards1.concat(cards2)

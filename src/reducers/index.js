@@ -14,6 +14,13 @@ cards = [{
   pickingIndex: xxx,
 }]
 
+ui = {
+  selecting: {
+    holder: hand,
+    cards: [],
+  },
+}
+
 */
 
 import { combineReducers } from 'redux'
@@ -24,6 +31,7 @@ import {
   UPDATE_CARD,
   ADD_CARDS,
   REMOVE_CARDS,
+  RECEIVE_UI_SELECTING,
 } from '../actions'
 
 const players = (state = [], action) => {
@@ -50,7 +58,17 @@ const cards = (state = [], action) => {
   }
 }
 
+const ui = (state = {}, action) => {
+  switch (action.type) {
+    case RECEIVE_UI_SELECTING:
+      return { ...state, selecting: action.selecting }
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   players,
   cards,
+  ui,
 })

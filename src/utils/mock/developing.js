@@ -174,6 +174,19 @@ const originalCards = {
       "Wild Hunt"
     ]
   },
+  "first_light":{
+    "factoin":"Neutral",
+    "power":0,
+    "row":"Special",
+    "type":"Bronze",
+    "name_en":"First Light",
+    "abilities_en":"Spawn Clear Skies or Rally.",
+    "rarity":"Common",
+    "loyalty":"",
+    "attributes":[
+      "Special"
+    ]
+  },
 }
 
 const cards1 = [{
@@ -286,6 +299,11 @@ const cards1 = [{
   deckIndex: 0,
   name: 'cleaver',
   ...originalCards['cleaver'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'first_light',
+  ...originalCards['first_light'],
 }]
 
 const cards2 = [{

@@ -14,11 +14,11 @@ cards = [{
   pickingIndex: xxx,
 }]
 
-ui = {
-  selecting: {
-    holder: hand,
-    cards: [],
-  },
+selecting: {
+  holder: hand,
+  cards: [],
+  card,
+  curriedAction: xxx,
 }
 
 */
@@ -31,7 +31,7 @@ import {
   UPDATE_CARD,
   ADD_CARDS,
   REMOVE_CARDS,
-  RECEIVE_UI_SELECTING,
+  RECEIVE_SELECTING,
 } from '../actions'
 
 const players = (state = [], action) => {
@@ -58,10 +58,10 @@ const cards = (state = [], action) => {
   }
 }
 
-const ui = (state = {}, action) => {
+const selecting = (state = {}, action) => {
   switch (action.type) {
-    case RECEIVE_UI_SELECTING:
-      return { ...state, selecting: action.selecting }
+    case RECEIVE_SELECTING:
+      return action.selecting
     default:
       return state
   }
@@ -70,5 +70,5 @@ const ui = (state = {}, action) => {
 export default combineReducers({
   players,
   cards,
-  ui,
+  selecting,
 })

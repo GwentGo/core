@@ -5,7 +5,7 @@ export const RECEIVE_CARDS = 'RECEIVE_CARDS'
 export const UPDATE_CARD = 'UPDATE_CARD'
 export const ADD_CARDS = 'ADD_CARDS'
 export const REMOVE_CARDS = 'REMOVE_CARDS'
-export const RECEIVE_UI_SELECTING = 'RECEIVE_UI_SELECTING'
+export const RECEIVE_SELECTING = 'RECEIVE_SELECTING'
 
 export const receivePlayers = players => ({ type: RECEIVE_PLAYERS, players })
 
@@ -29,4 +29,4 @@ export const addCards = cards => ({ type: ADD_CARDS, cards })
 
 export const removeCards = cards => ({ type: REMOVE_CARDS, cards })
 
-export const receiveUiSelecting = selecting => ({ type: RECEIVE_UI_SELECTING, selecting })
+export const receiveSelecting = selecting => ({ type: RECEIVE_SELECTING, selecting })

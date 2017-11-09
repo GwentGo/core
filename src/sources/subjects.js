@@ -2,11 +2,12 @@ import { Subject } from 'rxjs/Subject';
 
 import * as cards from './cards'
 
-export const subject = new Subject()
+export const actionSubject = new Subject()
+export const weatherSubject = new Subject()
+export const roundSubject = new Subject()
 
-export const subscribe = () => {
-  subject.subscribe({
-    next: action => {
+export const subscribeActionSubject = () => {
+  actionSubject.subscribe(action => {
       const {out, into, card} = action
 
       const outFunction = cards[card.name][`${out.type}Out`]
@@ -20,5 +21,5 @@ export const subscribe = () => {
       }
       inFunction && inFunction(action)
     }
-  })
+  )
 }

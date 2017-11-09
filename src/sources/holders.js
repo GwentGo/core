@@ -59,3 +59,23 @@ export const pickings = [{
   index: 1,
   type: 'picking',
 }]
+
+export const tombs = [{
+  id: uuid(),
+  index: 0,
+  type: 'tomb',
+}, {
+  id: uuid(),
+  index: 1,
+  type: 'tomb',
+}]
+
+export const tables = [{
+  id: uuid(),
+  index: 0,
+  type: 'table',
+}, {
+  id: uuid(),
+  index: 1,
+  type: 'table',
+}]

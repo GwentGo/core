@@ -30,7 +30,7 @@ const getHolder = card => {
 
 class CardComponent extends Component {
   render() {
-    const { card, ui, onSelecting } = this.props
+    const { card, selecting, onSelecting } = this.props
     const holder = getHolder(card)
 
     return (
@@ -39,7 +39,7 @@ class CardComponent extends Component {
           <Typography type="body2">({card.power}) {card.type}</Typography>
           <Typography type="title">{card.name_en}</Typography>
         </CardContent>
-        {ui.selecting && ui.selecting.holder && ui.selecting.holder.id === holder.id && ui.selecting.cards && ui.selecting.cards.length > 0 && (
+        {selecting && selecting.holder && selecting.holder.id === holder.id && selecting.cards && selecting.cards.length > 0 && (
           <CardActions>
             <Button color="accent" onClick={onSelecting}>select</Button>
           </CardActions>
@@ -49,8 +49,8 @@ class CardComponent extends Component {
   }
 }
 
-const mapStateToProps = ({ ui }) => ({
-  ui,
+const mapStateToProps = ({ selecting }) => ({
+  selecting,
 })
 
 export default connect(mapStateToProps)(CardComponent)

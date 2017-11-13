@@ -15,10 +15,21 @@ cards = [{
 }]
 
 selecting: {
-  holder: hand,
-  cards: [],
-  card,
-  curriedAction: xxx,
+  from: {
+    player,
+    holders: ['hand', 'fighter'],
+  },
+  to: {
+    player,
+    holders: ['fighter', 'table', 'thrower'],
+    curriedAction: xxx,
+  },
+  specific: {
+    player,
+    holders: ['hand', 'fighter', 'table', 'thrower'],
+    number: xxx,
+    curriedAction: xxx,
+  }
 }
 
 */
@@ -31,7 +42,8 @@ import {
   UPDATE_CARD,
   ADD_CARDS,
   REMOVE_CARDS,
-  RECEIVE_SELECTING,
+  RECEIVE_SELECTING_FROM,
+  RECEIVE_SELECTING_TO,
 } from '../actions'
 
 const players = (state = [], action) => {
@@ -60,8 +72,10 @@ const cards = (state = [], action) => {
 
 const selecting = (state = {}, action) => {
   switch (action.type) {
-    case RECEIVE_SELECTING:
-      return action.selecting
+    case RECEIVE_SELECTING_FROM:
+      return { ...state, from: action.from }
+    case RECEIVE_SELECTING_TO:
+      return { ...state, to: action.to }
     default:
       return state
   }

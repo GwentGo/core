@@ -70,9 +70,8 @@ class Board extends Component {
   }
 
   replacing = () => {
-    const hand = holders.hands.find(hand => hand.index === this.state.replacing.currentIndex)
-    const handCards = this.props.cards.filter(card => card.handIndex === hand.index)
-    this.props.receiveSelecting({ holder: hand, cards: handCards })
+    const player = this.props.players.find(player => player.index === this.state.replacing.currentIndex)
+    this.props.receiveSelectingFrom({ player, holders: ['hand'] })
   }
 
   replaceCard = card => {
@@ -84,33 +83,47 @@ class Board extends Component {
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
   }
 
-  start = () => {
-    this.props.receiveSelecting({ holder: null, cards: [] })
-    this.toggleRound()
+  getNextPlayer = () => {
+    const { players } = this.props
+    const { currentPlayer } = this.state
+
+    return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
   }
 
   toggleRound = () => {
     const { players } = this.props
     const { currentPlayer } = this.state
-    let nextPlayer = null
 
-    if (!currentPlayer) {
-      nextPlayer = players[new Random().integer(0, players.length - 1)]
-    } else {
-      nextPlayer = players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
-    }
+    const nextPlayer = currentPlayer ? this.getNextPlayer() : players[new Random().integer(0, players.length - 1)]
 
     this.setState({ currentPlayer: nextPlayer }, () => {
-      const hand = holders.hands.find(hand => hand.index === nextPlayer.index)
-      const handCards = this.props.cards.filter(card => card.handIndex === hand.index)
-      this.props.receiveSelecting({ holder: hand, cards: handCards })
+      this.props.receiveSelectingFrom({ player: nextPlayer, holders: ['hand'] })
     })
   }
 
-  isCardAllowedSelectedToPlayer = (card, player) => {
+  getHoldersFromCard = card => {
+    const mapping = {
+      'Melee': 'fighter',
+      'Ranged': 'archer',
+      'Siege': 'thrower',
+    }
+
+    if (card.row.indexOf('Special') !== -1) {
+      return ['table']
+    } else {
+      return card.row === 'Any' ? ['fighter', 'archer', 'thrower'] : [mapping[card.row]]
+    }
+  }
+
+  isPlayerMatchWithCurrentPlayer = player => {
+    const { currentPlayer, replacing } = this.state
+    return player.index === (currentPlayer ? currentPlayer.index : replacing.currentIndex)
+  }
+
+  isPlayerMatchWithCard = (player, card) => {
     const { currentPlayer } = this.state
 
-    if (card.loyalty.indexOf('Loyal') !== -1 && card.loyalty.indexOf('Deloyal') !== -1) {
+    if (card.loyalty.indexOf('Loyal') !== -1 && card.loyalty.indexOf('Disloyal') !== -1) {
       return true
     } else if (card.row.indexOf('Special') !== -1 || card.type.indexOf('Leader') !== -1 || card.loyalty.indexOf('Loyal') !== -1) {
       return currentPlayer.index === player.index
@@ -119,25 +132,26 @@ class Board extends Component {
     }
   }
 
-  isCardAllowedSelectedToHolder = (card, holder) => {
-    const mapping = {
-      'fighter': 'Melee',
-      'archer': 'Ranged',
-      'thrower': 'Siege',
-      'table': 'Special',
-    }
-    const row = card.row.indexOf('Special') !== -1 ? 'Special' : card.row
-
-    return row === mapping[holder.type] || (row === 'Any' && ['fighter', 'archer', 'thrower'].indexOf(holder.type) !== -1 )
+  isPlayerMatchWithSelectingPlayer = player => {
+    return this.props.selecting.to.player.index === player.index
   }
 
-  onceSelected = (holder, card) => {
-    this.props.receiveSelecting({ holder: null, cards: [], card, curriedAction: into => ({ out: holder, into, card }) })
+  canHoldWithPlayerAndCard = (player, card) => {
+    return card.row.indexOf('Special') !== -1 ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
   }
 
-  twiceSelected = holder => {
-    this.act(this.props.selecting.curriedAction(holder))
-    this.props.receiveSelecting({ holder: null, cards: [] })
+  isHolderMatch = (holders, holder) => {
+    return holders.indexOf(holder.type) !== -1
+  }
+
+  fromSelected = (holder, card) => {
+    this.props.receiveSelectingFrom(null)
+    this.props.receiveSelectingTo({ player: this.getNextPlayer(), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+  }
+
+  toSelected = holder => {
+    this.act(this.props.selecting.to.curriedAction(holder))
+    this.props.receiveSelectingTo(null)
   }
 
   render() {
@@ -218,29 +232,33 @@ class Board extends Component {
                     Please replace your card, remain: {replacing.remain}
                     <Button color="accent" onClick={() => {
                       if (replacing.currentIndex === holders.hands.length - 1) {
-                        this.setState({ replacing: { ...replacing, hasDone: true } }, this.start)
+                        this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)
                       } else {
                         this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing)
                       }
                     }}>finish</Button>
                   </Typography>
                 )}
-                {currentPlayer && currentPlayer.id === player.id && selecting.holder && selecting.holder.id === hand.id && selecting.cards && selecting.cards.length > 0 && (
+                {replacing.hasDone && this.isPlayerMatchWithCurrentPlayer(player) && (
                   <Typography type="caption" gutterBottom>
-                    Please take an action:
+                    Please choose:
                   </Typography>
                 )}
                 <Grid container>
                   {handCards.map(card => {
                     let onSelecting = null
-                    if (replacing.hasDone) {
-                      onSelecting = () => this.onceSelected(hand, card)
-                    } else if (replacing.remain - 1 > 0) {
-                      onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
-                    } else if (replacing.currentIndex === holders.hands.length - 1) {
-                      onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.start)}
-                    } else {
-                      onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
+                    if (this.isPlayerMatchWithCurrentPlayer(player)) {
+                      if (replacing.hasDone) {
+                        if (selecting.from && this.isHolderMatch(selecting.from.holders, hand)) {
+                          onSelecting = () => this.fromSelected(hand, card)
+                        }
+                      } else if (replacing.remain - 1 > 0) {
+                        onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
+                      } else if (replacing.currentIndex === holders.hands.length - 1) {
+                        onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.start)}
+                      } else {
+                        onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
+                      }
                     }
                     return (
                       <Grid key={card.id} item>
@@ -258,8 +276,8 @@ class Board extends Component {
 
                   <Typography type="title" gutterBottom>
                     Table:
-                    {!selecting.holder && selecting.card && this.isCardAllowedSelectedToPlayer(selecting.card, player) && this.isCardAllowedSelectedToHolder(selecting.card, table) && (
-                      <Button color="accent" onClick={() => this.twiceSelected(table)}>select</Button>
+                    {this.isPlayerMatchWithCurrentPlayer(player) && selecting.to && this.isHolderMatch(selecting.to.holders, table) && (
+                      <Button color="accent" onClick={() => this.toSelected(table)}>select</Button>
                     )}
                   </Typography>
 
@@ -268,8 +286,8 @@ class Board extends Component {
                   <div tag="fighter-cards">
                     <Typography type="subheading" gutterBottom>
                       Fighter({fighterCards.length}):
-                      {!selecting.holder && selecting.card && this.isCardAllowedSelectedToPlayer(selecting.card, player) && this.isCardAllowedSelectedToHolder(selecting.card, fighter) && (
-                        <Button color="accent" onClick={() => this.twiceSelected(fighter)}>select</Button>
+                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, fighter) && (
+                        <Button color="accent" onClick={() => this.toSelected(fighter)}>select</Button>
                       )}
                     </Typography>
                     {fighterCards.length > 0 && (
@@ -290,8 +308,8 @@ class Board extends Component {
                   <div tag="archer-cards">
                     <Typography type="subheading" gutterBottom>
                       Archer({archerCards.length}):
-                      {!selecting.holder && selecting.card && this.isCardAllowedSelectedToPlayer(selecting.card, player) && this.isCardAllowedSelectedToHolder(selecting.card, archer) && (
-                        <Button color="accent" onClick={() => this.twiceSelected(archer)}>select</Button>
+                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, archer) && (
+                        <Button color="accent" onClick={() => this.toSelected(archer)}>select</Button>
                       )}
                     </Typography>
                     {archerCards.length > 0 && (
@@ -312,8 +330,8 @@ class Board extends Component {
                   <div tag="thrower-cards">
                     <Typography type="subheading" gutterBottom>
                       Thrower({throwerCards.length}):
-                      {!selecting.holder && selecting.card && this.isCardAllowedSelectedToPlayer(selecting.card, player) && this.isCardAllowedSelectedToHolder(selecting.card, thrower) && (
-                        <Button color="accent" onClick={() => this.twiceSelected(thrower)}>select</Button>
+                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, thrower) && (
+                        <Button color="accent" onClick={() => this.toSelected(thrower)}>select</Button>
                       )}
                     </Typography>
                     {throwerCards.length > 0 && (
@@ -337,9 +355,6 @@ class Board extends Component {
               <div tag="tomb-cards">
                 <Typography type="subheading" gutterBottom>
                   Tomb({tombCards.length}):
-                  {!selecting.holder && selecting.card && this.isCardAllowedSelectedToPlayer(selecting.card, player) && this.isCardAllowedSelectedToHolder(selecting.card, tomb) && (
-                    <Button color="accent" onClick={() => this.twiceSelected(tomb)}>select</Button>
-                  )}
                 </Typography>
                 {tombCards.length > 0 && (
                   <Grid container>

@@ -187,6 +187,49 @@ const originalCards = {
       "Special"
     ]
   },
+  "swallow_potion":{
+    "factoin":"Neutral",
+    "power":0,
+    "row":"Special",
+    "type":"Bronze",
+    "name_en":"Swallow Potion",
+    "abilities_en":"Boost a Unit by 8.",
+    "rarity":"Common",
+    "loyalty":"",
+    "attributes":[
+      "Alchemy",
+      "Special"
+    ]
+  },
+  "iris":{
+    "factoin":"Neutral",
+    "power":3,
+    "row":"Any",
+    "type":"Silver",
+    "name_en":"Iris",
+    "abilities_en":"Deathwish: Boost 5 random Units on the other side of the Board by 5.",
+    "rarity":"Epic",
+    "loyalty":"Disloyal",
+    "attributes":[
+      "Agent",
+      "Cursed",
+      "Redania"
+    ]
+  },
+  "fringilla_vigo":{
+    "factoin":"Nilfgaard",
+    "power":6,
+    "row":"Any",
+    "type":"Silver",
+    "name_en":"Fringilla Vigo",
+    "abilities_en":"Deploy: If Spying, set own base Power to 1. Set the Power of the Unit on the right to that of the Unit on the left.",
+    "rarity":"Epic",
+    "loyalty":"Disloyal,Loyal",
+    "attributes":[
+      "Double Agent",
+      "Mage"
+    ]
+  },
 }
 
 const cards1 = [{
@@ -304,6 +347,31 @@ const cards1 = [{
   deckIndex: 0,
   name: 'first_light',
   ...originalCards['first_light'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'swallow_potion',
+  ...originalCards['swallow_potion'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'swallow_potion',
+  ...originalCards['swallow_potion'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'swallow_potion',
+  ...originalCards['swallow_potion'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'iris',
+  ...originalCards['iris'],
+}, {
+  id: uuid(),
+  deckIndex: 0,
+  name: 'fringilla_vigo',
+  ...originalCards['fringilla_vigo'],
 }]
 
 const cards2 = [{

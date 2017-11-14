@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4'
 
 import originalCards from '../originalCards'
-import { getRandomCards } from '../helpers'
+import { getRandomCards } from '../tools'
 
 const sourceCards = originalCards.map(card => ({
   id: uuid(),

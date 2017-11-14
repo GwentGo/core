@@ -24,30 +24,36 @@ export const fighters = [{
   id: uuid(),
   index: 0,
   type: 'fighter',
+  weather: null,
 }, {
   id: uuid(),
   index: 1,
   type: 'fighter',
+  weather: null,
 }]
 
 export const archers = [{
   id: uuid(),
   index: 0,
   type: 'archer',
+  weather: null,
 }, {
   id: uuid(),
   index: 1,
   type: 'archer',
+  weather: null,
 }]
 
 export const throwers = [{
   id: uuid(),
   index: 0,
   type: 'thrower',
+  weather: null,
 }, {
   id: uuid(),
   index: 1,
   type: 'thrower',
+  weather: null,
 }]
 
 export const pickings = [{

@@ -11,8 +11,8 @@ import Paper from 'material-ui/Paper'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { actionSubject, subscribeActionSubject, roundSubject } from '../sources/subjects'
-import { getRandomCards } from '../utils/helpers'
+import { actionSubject, subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
+import { getRandomCards } from '../utils/tools'
 
 const styles = {
   root: {
@@ -41,6 +41,7 @@ class Board extends Component {
     })
 
     subscribeActionSubject()
+    subscribeWeatherSubject()
 
     roundSubject.subscribe(round => {
       round.hasDone && this.toggleRound()
@@ -290,6 +291,11 @@ class Board extends Component {
                         <Button color="accent" onClick={() => this.toSelected(fighter)}>select</Button>
                       )}
                     </Typography>
+                    {fighter.weather && (
+                      <Typography type="caption" gutterBottom>
+                        Weather: {fighter.weather.card.name}
+                      </Typography>
+                    )}
                     {fighterCards.length > 0 && (
                       <Grid container>
                         {fighterCards.map(card => (
@@ -312,6 +318,11 @@ class Board extends Component {
                         <Button color="accent" onClick={() => this.toSelected(archer)}>select</Button>
                       )}
                     </Typography>
+                    {archer.weather && (
+                      <Typography type="caption" gutterBottom>
+                        Weather: {archer.weather.card.name}
+                      </Typography>
+                    )}
                     {archerCards.length > 0 && (
                       <Grid container>
                         {archerCards.map(card => (
@@ -334,6 +345,11 @@ class Board extends Component {
                         <Button color="accent" onClick={() => this.toSelected(thrower)}>select</Button>
                       )}
                     </Typography>
+                    {thrower.weather && (
+                      <Typography type="caption" gutterBottom>
+                        Weather: {thrower.weather.card.name}
+                      </Typography>
+                    )}
                     {throwerCards.length > 0 && (
                       <Grid container>
                         {throwerCards.map(card => (

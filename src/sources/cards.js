@@ -3,18 +3,11 @@ import uuid from 'uuid/v4'
 import originalCards from '../utils/originalCards'
 import { store } from './store'
 import * as actions from '../actions'
-import { weatherSubject, roundSubject } from './subjects'
+import { roundSubject } from './subjects'
+import { getNextPlayerByIndex } from '../utils/helpers'
+import * as derivativeCards from './derivativeCards'
 
-const getCurrentPlayerByIndex = index => {
-  return store.getState().players.find(player => player.index === index)
-}
-
-const getNextPlayerByIndex = index => {
-  const players = store.getState().players
-  const currentPlayer = getCurrentPlayerByIndex(index)
-
-  return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
-}
+export const { frost_hazard } = derivativeCards
 
 export const eredin = {
   tableIn: action => {
@@ -36,15 +29,19 @@ export const wild_hunt_hound = {
 
 export const ice_giant = {
   tableIn: action => {
-    weatherSubject.subscribe(() => {
-      console.log('weather happens')
-    })
+    // check if any holder has weather
     roundSubject.next({ hasDone: true })
   }
 }
 
 export const biting_frost = {
   tableIn: action => {
-    // store.dispatch(actions.receiveSelectingTo({ player: getNextPlayerByIndex(), holders: ['fighter', 'archer', 'thrower'] }))
+    setTimeout(() => {
+      store.dispatch(actions.receiveSelectingTo({
+        player: getNextPlayerByIndex(action.out.index),
+        holders: ['fighter', 'archer', 'thrower'],
+        curriedAction: into => ({ out: { index: action.out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCardByName('frost_hazard') }),
+      }))
+    }, 200)
   }
 }

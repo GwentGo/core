@@ -21,12 +21,12 @@ selecting: {
   },
   to: {
     player,
-    holders: ['fighter', 'table', 'thrower'],
+    holders: ['fighter', 'archer', 'thrower'],
     curriedAction: xxx,
   },
   specific: {
     player,
-    holders: ['hand', 'fighter', 'table', 'thrower'],
+    holders: ['hand', 'fighter', 'archer', 'thrower'],
     number: xxx,
     curriedAction: xxx,
   }

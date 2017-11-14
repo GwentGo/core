@@ -151,8 +151,8 @@ class Board extends Component {
   }
 
   toSelected = holder => {
-    this.act(this.props.selecting.to.curriedAction(holder))
     this.props.receiveSelectingTo(null)
+    this.act(this.props.selecting.to.curriedAction(holder))
   }
 
   render() {

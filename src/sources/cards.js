@@ -36,12 +36,10 @@ export const ice_giant = {
 
 export const biting_frost = {
   tableIn: action => {
-    setTimeout(() => {
-      store.dispatch(actions.receiveSelectingTo({
-        player: getNextPlayerByIndex(action.out.index),
-        holders: ['fighter', 'archer', 'thrower'],
-        curriedAction: into => ({ out: { index: action.out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCardByName('frost_hazard') }),
-      }))
-    }, 200)
+    store.dispatch(actions.receiveSelectingTo({
+      player: getNextPlayerByIndex(action.out.index),
+      holders: ['fighter', 'archer', 'thrower'],
+      curriedAction: into => ({ out: { index: action.out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCardByName('frost_hazard') }),
+    }))
   }
 }

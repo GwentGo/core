@@ -7,6 +7,8 @@ import Grid from 'material-ui/Grid'
 import Button from 'material-ui/Button'
 import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
+import SvgIcon from 'material-ui/SvgIcon'
+import amber from 'material-ui/colors/amber'
 
 import Card from './Card'
 import * as actions from '../actions'
@@ -200,9 +202,9 @@ class Board extends Component {
                 <Typography type="headline" gutterBottom>
                   {player.name}
                 </Typography>
-                <Typography gutterBottom>
-                  Win: {player.win}, Lose: {player.lose}, Rate: {rate * 100}%
-                </Typography>
+                <SvgIcon>
+                  <path fill={amber[500]} d="M5,16L3,5L8.5,12L12,5L15.5,12L21,5L19,16H5M19,19A1,1 0 0,1 18,20H6A1,1 0 0,1 5,19V18H19V19Z" />
+                </SvgIcon>
                 <Typography type="subheading" gutterBottom>
                   Power: {this.calculate(tableCards)}
                 </Typography>

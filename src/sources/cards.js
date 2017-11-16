@@ -52,7 +52,7 @@ export const biting_frost = {
     store.dispatch(actions.receiveSelectingTo({
       player: getNextPlayer({ index: out.index }),
       holders: ['fighter', 'archer', 'thrower'],
-      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCardByName('frost_hazard') }),
+      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCard({ name: 'frost_hazard' }) }),
     }))
 
     act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })

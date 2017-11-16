@@ -13,7 +13,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act } from '../utils'
+import { act, getHolder } from '../utils'
 
 const styles = {
   root: {
@@ -59,9 +59,12 @@ class Board extends Component {
 
   setupHandCards = () => {
     holders.decks.forEach(deck => {
-      const deckCards = this.props.cards.filter(card => card.deckIndex === deck.index)
-      const hand = holders.hands.find(hand => hand.index === deck.index)
+      const hand = getHolder({ type: 'hand', index: deck.index })
 
+      const leader = this.props.cards.find(card => card.deckIndex === deck.index && card.type === 'Leader')
+      this.props.updateCard({ ...leader, deckIndex: '', handIndex: hand.index })
+
+      const deckCards = this.props.cards.filter(card => card.deckIndex === deck.index && card.type !== 'Leader')
       getRandomCards(deckCards, { number: 10 }).forEach(card => {
         this.props.updateCard({ ...card, deckIndex: '', handIndex: hand.index })
       })
@@ -254,12 +257,14 @@ class Board extends Component {
                         if (selecting.from && this.isHolderMatch(selecting.from.holders, hand)) {
                           onSelecting = () => this.fromSelected(hand, card)
                         }
-                      } else if (replacing.remain - 1 > 0) {
-                        onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
-                      } else if (replacing.currentIndex === holders.hands.length - 1) {
-                        onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)}
-                      } else {
-                        onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
+                      } else if (card.type !== 'Leader') {
+                        if (replacing.remain - 1 > 0) {
+                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
+                        } else if (replacing.currentIndex === holders.hands.length - 1) {
+                          onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)}
+                        } else {
+                          onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
+                        }
                       }
                     }
                     return (

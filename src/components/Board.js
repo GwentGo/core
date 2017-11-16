@@ -257,7 +257,7 @@ class Board extends Component {
                       } else if (replacing.remain - 1 > 0) {
                         onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
                       } else if (replacing.currentIndex === holders.hands.length - 1) {
-                        onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.start)}
+                        onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)}
                       } else {
                         onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
                       }
@@ -392,16 +392,19 @@ class Board extends Component {
                     Picking({pickingCards.length}):
                   </Typography>
                   <Grid container>
-                    {pickingCards.map(card => (
-                      <Grid key={card.id} item>
-                        <div onClick={() => {
-                          this.act({ out: picking, into: fighter, card })
-                          this.props.removeCards(pickingCards.filter(c => c.id !== card.id))
-                        }}>
-                          <Card card={card} />
-                        </div>
-                      </Grid>
-                    ))}
+                    {pickingCards.map(card => {
+                      let onSelecting = null
+                      if (this.isPlayerMatchWithCurrentPlayer(player)) {
+                        if (selecting.from && this.isHolderMatch(selecting.from.holders, picking)) {
+                          onSelecting = () => this.fromSelected(picking, card)
+                        }
+                      }
+                      return (
+                        <Grid key={card.id} item>
+                          <Card card={card} onSelecting={onSelecting} />
+                        </Grid>
+                      )
+                    })}
                   </Grid>
                 </div>
               )}

@@ -24,3 +24,7 @@ export const act = action => {
 export const getHolder = ({ type, index }) => {
   return holders[`${type}s`].find(holder => holder.index === index)
 }
+
+export const getCards = ({ type, index }) => {
+  return store.getState().cards.filter(card => card[`${type}Index`] === index)
+}

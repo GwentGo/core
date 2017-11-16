@@ -13,7 +13,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder } from '../utils'
+import { act, getHolder, getCards } from '../utils'
 
 const styles = {
   root: {
@@ -148,8 +148,8 @@ class Board extends Component {
     if (card.row.indexOf('Special') !== -1) {
       this.props.receiveSelectingTo(null)
 
-      const currentTable = holders.tables.find(table => table.index === holder.index)
-      this.act({ out: holder, into: currentTable, card })
+      const table = getHolder({ type: 'table', index: holder.index })
+      this.act({ out: holder, into: table, card })
     } else {
       this.props.receiveSelectingTo({ player: this.getNextPlayer(), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
     }
@@ -283,9 +283,6 @@ class Board extends Component {
 
                   <Typography type="title" gutterBottom>
                     Table:
-                    {this.isPlayerMatchWithCurrentPlayer(player) && selecting.to && this.isHolderMatch(selecting.to.holders, table) && (
-                      <Button color="accent" onClick={() => this.toSelected(table)}>select</Button>
-                    )}
                   </Typography>
 
                   <br/>

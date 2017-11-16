@@ -35,6 +35,10 @@ export const wild_hunt_hound = {
     if (biting_frost) {
       act({ out: getHolder({ type: 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
     }
+  },
+  pickingOut: action => {
+    const pickingCards = getCards({ type: 'picking', index: action.out.index })
+    store.dispatch(actions.removeCards(pickingCards))
   }
 }
 

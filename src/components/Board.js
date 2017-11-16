@@ -109,11 +109,7 @@ class Board extends Component {
       'Siege': 'thrower',
     }
 
-    if (card.row.indexOf('Special') !== -1) {
-      return ['table']
-    } else {
-      return card.row === 'Any' ? ['fighter', 'archer', 'thrower'] : [mapping[card.row]]
-    }
+    return card.row === 'Any' ? ['fighter', 'archer', 'thrower'] : [mapping[card.row]]
   }
 
   isPlayerMatchWithCurrentPlayer = player => {
@@ -147,7 +143,15 @@ class Board extends Component {
 
   fromSelected = (holder, card) => {
     this.props.receiveSelectingFrom(null)
-    this.props.receiveSelectingTo({ player: this.getNextPlayer(), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+
+    if (card.row.indexOf('Special') !== -1) {
+      this.props.receiveSelectingTo(null)
+
+      const currentTable = holders.tables.find(table => table.index === holder.index)
+      this.act({ out: holder, into: currentTable, card })
+    } else {
+      this.props.receiveSelectingTo({ player: this.getNextPlayer(), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+    }
   }
 
   toSelected = holder => {
@@ -179,8 +183,6 @@ class Board extends Component {
           const thrower = holders.throwers.find(thrower => thrower.index === player.index)
           const throwerCards = cards.filter(card => card.throwerIndex === thrower.index)
 
-          const tableCards = fighterCards.concat(archerCards, throwerCards)
-
           const picking = holders.pickings.find(picking => picking.index === player.index)
           const pickingCards = cards.filter(card => card.pickingIndex === picking.index)
 
@@ -188,6 +190,7 @@ class Board extends Component {
           const tombCards = cards.filter(card => card.tombIndex === tomb.index)
 
           const table = holders.tables.find(table => table.index === player.index)
+          const tableCards = fighterCards.concat(archerCards, throwerCards)
 
           return (
             <div key={player.id}>

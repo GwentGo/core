@@ -3,8 +3,9 @@ import uuid from 'uuid/v4'
 import originalCards from '../utils/originalCards'
 import { store } from './store'
 import * as actions from '../actions'
-import { roundSubject } from './subjects'
-import { getNextPlayerByIndex } from '../utils/helpers'
+import { roundSubject, actionSubject } from './subjects'
+import { getNextPlayer, act, getHolder } from '../utils'
+import * as holders from '../sources/holders'
 import * as derivativeCards from './derivativeCards'
 
 export const { frost_hazard } = derivativeCards
@@ -23,7 +24,14 @@ export const eredin = {
 
 export const wild_hunt_hound = {
   tableIn: action => {
-    // store.dispatch(actions.updateCard({ ...action.card,  }))
+    const { out, into, card } = action
+
+    const handCards = store.getState().cards.filter(card => card.handIndex === out.index)
+    const biting_frost = handCards.find(card => card.name === 'biting_frost')
+
+    if (biting_frost) {
+      act({ out: getHolder({ type: 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
+    }
   }
 }
 
@@ -39,11 +47,11 @@ export const biting_frost = {
     const { out, into, card } = action
 
     store.dispatch(actions.receiveSelectingTo({
-      player: getNextPlayerByIndex(out.index),
+      player: getNextPlayer({ index: out.index }),
       holders: ['fighter', 'archer', 'thrower'],
       curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCardByName('frost_hazard') }),
     }))
 
-    store.dispatch(actions.updateCard({...card, [`${into.type}Index`]: '', [`tombIndex`]: into.index }))
+    act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   }
 }

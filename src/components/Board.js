@@ -11,8 +11,9 @@ import Paper from 'material-ui/Paper'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { actionSubject, subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
+import { subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
+import { act } from '../utils'
 
 const styles = {
   root: {
@@ -53,10 +54,7 @@ class Board extends Component {
   }
 
   act = action => {
-    const {out, into, card} = action
-
-    this.props.updateCard({...card, [`${out.type}Index`]: '', [`${into.type}Index`]: into.index })
-    actionSubject.next(action)
+    act(action)
   }
 
   setupHandCards = () => {

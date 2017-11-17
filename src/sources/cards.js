@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../utils/originalCards'
 import { store } from './store'
 import * as actions from '../actions'
-import { roundSubject, actionSubject } from './subjects'
+import { turnSubject, actionSubject } from './subjects'
 import { getNextPlayer, act, getHolder, getCurrentPlayer, getCards } from '../utils'
 import * as derivativeCards from './derivativeCards'
 
@@ -45,7 +45,7 @@ export const wild_hunt_hound = {
 export const ice_giant = {
   tableIn: action => {
     // check if any holder has weather
-    roundSubject.next({ hasDone: true })
+    turnSubject.next({ hasDone: true })
   }
 }
 

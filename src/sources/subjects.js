@@ -8,8 +8,8 @@ export const actionSubject = new Subject()
 // weather = { holder, card }
 export const weatherSubject = new Subject()
 
-// round = { hasDone: true }
-export const roundSubject = new Subject()
+// turn = { hasDone: true }
+export const turnSubject = new Subject()
 
 export const subscribeActionSubject = () => {
   actionSubject.subscribe(action => {

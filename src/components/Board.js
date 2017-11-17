@@ -13,7 +13,7 @@ import amber from 'material-ui/colors/amber'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { subscribeActionSubject, roundSubject, subscribeWeatherSubject } from '../sources/subjects'
+import { subscribeActionSubject, turnSubject, subscribeWeatherSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
 import { act, getHolder, getCards } from '../utils'
 
@@ -46,8 +46,8 @@ class Board extends Component {
     subscribeActionSubject()
     subscribeWeatherSubject()
 
-    roundSubject.subscribe(round => {
-      round.hasDone && this.toggleRound()
+    turnSubject.subscribe(turn => {
+      turn.hasDone && this.toggleTurn()
     })
   }
 
@@ -94,7 +94,7 @@ class Board extends Component {
     return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
   }
 
-  toggleRound = () => {
+  toggleTurn = () => {
     const { players } = this.props
     const { currentPlayer } = this.state
 
@@ -239,7 +239,7 @@ class Board extends Component {
                     Please replace your card, remain: {replacing.remain}
                     <Button color="accent" onClick={() => {
                       if (replacing.currentIndex === holders.hands.length - 1) {
-                        this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)
+                        this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)
                       } else {
                         this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing)
                       }
@@ -263,7 +263,7 @@ class Board extends Component {
                         if (replacing.remain - 1 > 0) {
                           onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
                         } else if (replacing.currentIndex === holders.hands.length - 1) {
-                          onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleRound)}
+                          onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)}
                         } else {
                           onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
                         }

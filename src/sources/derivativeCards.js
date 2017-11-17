@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4'
 
-import { weatherSubject, roundSubject } from './subjects'
+import { weatherSubject, turnSubject } from './subjects'
 
 export const getDerivativeCard = ({ name }) => ({
   id: uuid(),
@@ -11,6 +11,6 @@ export const getDerivativeCard = ({ name }) => ({
 export const frost_hazard = {
   tableIn: action => {
     weatherSubject.next({ holder: action.into, card: action.card })
-    roundSubject.next({ hasDone: true })
+    turnSubject.next({ hasDone: true })
   }
 }

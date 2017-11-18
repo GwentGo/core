@@ -38,6 +38,7 @@ import { combineReducers } from 'redux'
 
 import {
   RECEIVE_PLAYERS,
+  UPDATE_PLAYER,
   RECEIVE_CARDS,
   UPDATE_CARD,
   ADD_CARDS,
@@ -50,6 +51,8 @@ const players = (state = [], action) => {
   switch (action.type) {
     case RECEIVE_PLAYERS:
       return action.players || state
+    case UPDATE_PLAYER:
+      return state.map(player => player.id === action.player.id ? action.player : player)
     default:
       return state
   }

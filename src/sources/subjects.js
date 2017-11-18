@@ -1,6 +1,9 @@
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs/Subject'
 
 import * as cards from './cards'
+import { store } from '../sources/store'
+import * as actions from '../actions'
+import { calculate, getPlayers, getTableCards } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -10,6 +13,9 @@ export const weatherSubject = new Subject()
 
 // turn = { hasDone: true }
 export const turnSubject = new Subject()
+
+// round = { sequence }
+export const roundSubject = new Subject()
 
 export const subscribeActionSubject = () => {
   actionSubject.subscribe(action => {
@@ -27,6 +33,12 @@ export const subscribeActionSubject = () => {
       }
       intoFunction && intoFunction(action)
     }
+  })
+
+  actionSubject.subscribe(() => {
+    getPlayers().forEach(player => {
+      store.dispatch(actions.updatePlayer({ ...player, power: calculate(getTableCards({ index: player.index })) }))
+    })
   })
 }
 

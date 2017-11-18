@@ -13,9 +13,9 @@ import amber from 'material-ui/colors/amber'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { subscribeActionSubject, turnSubject, subscribeWeatherSubject } from '../sources/subjects'
+import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards } from '../utils'
 
 const styles = {
   root: {
@@ -30,17 +30,19 @@ class Board extends Component {
   state = {
     currentPlayer: null,
     replacing: {
-      currentIndex: 0,
-      remain: 3,
-      hasDone: false,
+      currentIndex: -1,
+      number: 0,
+      remain: 0,
+      hasDone: true,
     },
+    round: null,
   }
 
   componentDidMount() {
     this.props.fetchPlayers()
     this.props.fetchCards().then(() => {
       this.setupHandCards()
-      this.replacing()
+      roundSubject.next({ sequence: 1 })
     })
 
     subscribeActionSubject()
@@ -49,14 +51,78 @@ class Board extends Component {
     turnSubject.subscribe(turn => {
       turn.hasDone && this.toggleTurn()
     })
+
+    roundSubject.subscribe(round => {
+      this.clearTable()
+      this.setState({ round }, () => { this.prepareRound(round) })
+    })
   }
 
-  calculate = cards => {
-    return cards.reduce((acc, card) => (acc + card.power), 0)
+  clearTable = () => {
+    getPlayers().forEach(player => {
+      const tableCards = getTableCards({ index: player.index })
+      tableCards.forEach(card => {
+        this.props.updateCard({ ...card, fighterIndex: '', archerIndex: '', throwerIndex: '', tombIndex: player.index })
+      })
+    })
   }
 
-  act = action => {
-    act(action)
+  prepareRound = round => {
+    if (round.sequence === 1) {
+      this.setState({replacing: {
+        currentIndex: 0,
+        number: 3,
+        remain: 3,
+        hasDone: false,
+      }}, this.replacing)
+    } else {
+      this.judge()
+
+      getPlayers().forEach(player => {
+        const deckCards = getCards({ type: 'deck', index: player.index })
+        getRandomCards(deckCards, { number: round.sequence === 2 ? 2 : 1 }).forEach(card => {
+          this.props.updateCard({ ...card, deckIndex: '', handIndex: player.index })
+        })
+      })
+
+      this.setState({
+        currentPlayer: null,
+        replacing: {
+          currentIndex: this.isFinished() ? -1 : 0,
+          number: 1,
+          remain: 1,
+          hasDone: false,
+        },
+      }, this.replacing)
+    }
+  }
+
+  judge = () => {
+    let highestPower = 0
+    getPlayers().forEach(player => {
+      if (player.power > highestPower) {
+        highestPower = player.power
+      }
+    })
+
+    getPlayers().forEach(player => {
+      let values = { ...player, hasPassed: false, isWinPrevious: false, power: 0 }
+      if (player.power === highestPower) {
+        values = { ...values, wins: ++player.wins, isWinPrevious: true }
+      }
+      this.props.updatePlayer({ ...values })
+    })
+  }
+
+  isFinished = () => {
+    let mostWins = 0
+    getPlayers().forEach(player => {
+      if (player.wins > mostWins) {
+        mostWins = player.wins
+      }
+    })
+
+    return mostWins === 2
   }
 
   setupHandCards = () => {
@@ -87,21 +153,20 @@ class Board extends Component {
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
   }
 
-  getNextPlayer = () => {
-    const { players } = this.props
-    const { currentPlayer } = this.state
-
-    return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
+  getNextTurnPlayer = ({ player }) => {
+    const nextPlayer = getNextPlayer({ index: player.index })
+    return nextPlayer.hasPassed ? this.getNextTurnPlayer({ player: nextPlayer }) : nextPlayer
   }
 
   toggleTurn = () => {
     const { players } = this.props
     const { currentPlayer } = this.state
 
-    const nextPlayer = currentPlayer ? this.getNextPlayer() : players[new Random().integer(0, players.length - 1)]
+    const previousWinners = getPlayers().filter(player => player.isWinPrevious)
+    const nextTurnPlayer = currentPlayer ? this.getNextTurnPlayer({ player: currentPlayer }) : (previousWinners.length === 1 ? previousWinners[0] : players[new Random().integer(0, players.length - 1)])
 
-    this.setState({ currentPlayer: nextPlayer }, () => {
-      this.props.receiveSelectingFrom({ player: nextPlayer, holders: ['hand'] })
+    this.setState({ currentPlayer: nextTurnPlayer }, () => {
+      this.props.receiveSelectingFrom({ player: nextTurnPlayer, holders: ['hand'] })
     })
   }
 
@@ -151,15 +216,20 @@ class Board extends Component {
       this.props.receiveSelectingTo(null)
 
       const table = getHolder({ type: 'table', index: holder.index })
-      this.act({ out: holder, into: table, card })
+      act({ out: holder, into: table, card })
     } else {
-      this.props.receiveSelectingTo({ player: this.getNextPlayer(), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+      this.props.receiveSelectingTo({ player: getNextPlayer({ index: holder.index }), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
     }
   }
 
   toSelected = holder => {
     this.props.receiveSelectingTo(null)
-    this.act(this.props.selecting.to.curriedAction(holder))
+    act(this.props.selecting.to.curriedAction(holder))
+  }
+
+  pass = player => {
+    this.props.updatePlayer({ ...player, hasPassed: true })
+    getNextPlayer({ index: player.index }).hasPassed ? roundSubject.next({ sequence: this.state.round.sequence + 1 }) : this.toggleTurn()
   }
 
   render() {
@@ -168,9 +238,7 @@ class Board extends Component {
 
     return (
       <div>
-        {players.map(player=> {
-          const rate = (player.win / (player.win + player.lose)).toFixed(2)
-
+        {players.map(player => {
           const deck = holders.decks.find(deck => deck.index === player.index)
           const deckCards = cards.filter(card => card.deckIndex === deck.index)
 
@@ -192,9 +260,6 @@ class Board extends Component {
           const tomb = holders.tombs.find(tomb => tomb.index === player.index)
           const tombCards = cards.filter(card => card.tombIndex === tomb.index)
 
-          const table = holders.tables.find(table => table.index === player.index)
-          const tableCards = fighterCards.concat(archerCards, throwerCards)
-
           return (
             <div key={player.id}>
 
@@ -202,14 +267,16 @@ class Board extends Component {
                 <Typography type="headline" gutterBottom>
                   {player.name}
                 </Typography>
-                <SvgIcon>
-                  <path fill={amber[500]} d="M5,16L3,5L8.5,12L12,5L15.5,12L21,5L19,16H5M19,19A1,1 0 0,1 18,20H6A1,1 0 0,1 5,19V18H19V19Z" />
-                </SvgIcon>
+                {Array.from(Array(player.wins).keys()).map((value, index) => (
+                  <SvgIcon key={index}>
+                    <path fill={amber[500]} d="M5,16L3,5L8.5,12L12,5L15.5,12L21,5L19,16H5M19,19A1,1 0 0,1 18,20H6A1,1 0 0,1 5,19V18H19V19Z" />
+                  </SvgIcon>
+                ))}
                 <Typography type="subheading" gutterBottom>
-                  Power: {this.calculate(tableCards)}
+                  Power: {player.power}
                 </Typography>
                 {currentPlayer && currentPlayer.id === player.id && (
-                  <Button raised color="accent">Abandon</Button>
+                  <Button raised color="accent" onClick={() => { this.pass(player) }}>Pass</Button>
                 )}
               </div>
 
@@ -241,7 +308,7 @@ class Board extends Component {
                       if (replacing.currentIndex === holders.hands.length - 1) {
                         this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)
                       } else {
-                        this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing)
+                        this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing)
                       }
                     }}>finish</Button>
                   </Typography>
@@ -263,9 +330,9 @@ class Board extends Component {
                         if (replacing.remain - 1 > 0) {
                           onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
                         } else if (replacing.currentIndex === holders.hands.length - 1) {
-                          onSelecting = () => { this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)}
+                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)}
                         } else {
-                          onSelecting = () => { this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: 3 } }, this.replacing) }
+                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing) }
                         }
                       }
                     }

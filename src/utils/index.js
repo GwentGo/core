@@ -28,3 +28,15 @@ export const getHolder = ({ type, index }) => {
 export const getCards = ({ type, index }) => {
   return store.getState().cards.filter(card => card[`${type}Index`] === index)
 }
+
+export const getTableCards = ({ index }) => {
+  return store.getState().cards.filter(card => card.fighterIndex === index || card.archerIndex === index || card.throwerIndex === index)
+}
+
+export const calculate = cards => {
+  return cards.reduce((acc, card) => (acc + card.power), 0)
+}
+
+export const getPlayers = () => {
+  return store.getState().players
+}

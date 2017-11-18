@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../utils/originalCards'
 import { store } from './store'
 import * as actions from '../actions'
-import { turnSubject, actionSubject } from './subjects'
+import { turnSubject } from './subjects'
 import { getNextPlayer, act, getHolder, getCurrentPlayer, getCards } from '../utils'
 import * as derivativeCards from './derivativeCards'
 
@@ -25,7 +25,7 @@ export const eredin = {
 
 export const wild_hunt_hound = {
   tableIn: action => {
-    const { out, into, card } = action
+    const { out } = action
 
     const deckCards = getCards({ type: 'deck', index: out.index })
     const handCards = getCards({ type: 'hand', index: out.index })

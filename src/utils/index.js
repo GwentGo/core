@@ -30,13 +30,21 @@ export const getCards = ({ type, index }) => {
 }
 
 export const getTableCards = ({ index }) => {
-  return store.getState().cards.filter(card => card.fighterIndex === index || card.archerIndex === index || card.throwerIndex === index)
-}
-
-export const calculate = cards => {
-  return cards.reduce((acc, card) => (acc + card.power), 0)
+  if (index !== undefined) {
+    return store.getState().cards.filter(card => card.fighterIndex === index || card.archerIndex === index || card.throwerIndex === index)
+  } else {
+    return store.getState().cards.filter(card => card.fighterIndex !== '' || card.archerIndex !== '' || card.throwerIndex !== '')
+  }
 }
 
 export const getPlayers = () => {
   return store.getState().players
+}
+
+export const calculate = cards => {
+  return cards.reduce((acc, card) => (acc + calculatePoints({ card })), 0)
+}
+
+export const calculatePoints = ({ card }) => {
+  return card.points.original + card.points.increased + card.points.consolidated
 }

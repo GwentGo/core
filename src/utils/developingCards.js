@@ -486,5 +486,11 @@ const cards2 = [{
   ...originalCards['cleaver'],
 }]
 
-
-export default cards1.concat(cards2)
+export default cards1.concat(cards2).map(card => ({
+  ...card,
+  points: {
+    original: card.power,
+    increased: 0,
+    consolidated: 0,
+  },
+}))

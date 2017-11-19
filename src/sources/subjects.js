@@ -46,7 +46,7 @@ export const subscribeWeatherSubject = () => {
   weatherSubject.subscribe(weather => {
     weather.holder.weather = weather.card ? weather : null
 
-    if (weather.card.name === 'frost_hazard') {
+    if (weather.card && weather.card.name === 'frost_hazard') {
       getTableCards({}).forEach(card => {
         if (card.name === 'ice_giant' && !card.points.hasFrostHazardIncreased) {
           card.points.increased += 6

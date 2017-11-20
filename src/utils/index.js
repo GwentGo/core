@@ -1,6 +1,8 @@
+import Random from 'random-js'
+
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { actionSubject } from '../sources/subjects'
+import { actionSubject, turnSubject } from '../sources/subjects'
 import * as holders from '../sources/holders'
 
 export const getCurrentPlayer = ({ index }) => {
@@ -12,6 +14,19 @@ export const getNextPlayer = ({ index }) => {
   const currentPlayer = getCurrentPlayer({ index })
 
   return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
+}
+
+export const getNextTurnPlayer = ({ index }) => {
+  const nextPlayer = getNextPlayer({ index })
+  return nextPlayer.hasPassed ? getNextTurnPlayer({ index: nextPlayer.index }) : nextPlayer
+}
+
+export const toggleTurn = ({ currentPlayer }) => {
+  const players = getPlayers()
+  const previousWinners = players.filter(player => player.isWinPrevious)
+  const nextTurnPlayer = currentPlayer ? getNextTurnPlayer({ index: currentPlayer.index }) : (previousWinners.length === 1 ? previousWinners[0] : players[new Random().integer(0, players.length - 1)])
+
+  turnSubject.next({ player: nextTurnPlayer })
 }
 
 export const act = action => {
@@ -33,7 +48,7 @@ export const getTableCards = ({ index }) => {
   if (index !== undefined) {
     return store.getState().cards.filter(card => card.fighterIndex === index || card.archerIndex === index || card.throwerIndex === index)
   } else {
-    return store.getState().cards.filter(card => card.fighterIndex !== '' || card.archerIndex !== '' || card.throwerIndex !== '')
+    return store.getState().cards.filter(card => Number.isInteger(card.fighterIndex) || Number.isInteger(card.archerIndex) || Number.isInteger(card.throwerIndex))
   }
 }
 

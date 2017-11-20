@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Random from 'random-js'
 
 import { withStyles } from 'material-ui/styles'
 import Grid from 'material-ui/Grid'
@@ -13,9 +12,9 @@ import amber from 'material-ui/colors/amber'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject } from '../sources/subjects'
+import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject, subscribeTurnSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn } from '../utils'
 
 const styles = {
   root: {
@@ -48,8 +47,9 @@ class Board extends Component {
     subscribeActionSubject()
     subscribeWeatherSubject()
 
+    subscribeTurnSubject()
     turnSubject.subscribe(turn => {
-      turn.hasDone && this.toggleTurn()
+      turn.player && this.setupTurn(turn)
     })
 
     roundSubject.subscribe(round => {
@@ -65,6 +65,8 @@ class Board extends Component {
         this.props.updateCard({ ...card, fighterIndex: '', archerIndex: '', throwerIndex: '', tombIndex: player.index })
       })
     })
+
+    holders.fighters.concat(holders.archers, holders.throwers).forEach(holder => holder.weather = null)
   }
 
   prepareRound = round => {
@@ -139,6 +141,12 @@ class Board extends Component {
     })
   }
 
+  setupTurn = turn => {
+    this.setState({ currentPlayer: turn.player }, () => {
+      this.props.receiveSelectingFrom({ player: turn.player, holders: ['hand'] })
+    })
+  }
+
   replacing = () => {
     const player = this.props.players.find(player => player.index === this.state.replacing.currentIndex)
     this.props.receiveSelectingFrom({ player, holders: ['hand'] })
@@ -156,18 +164,6 @@ class Board extends Component {
   getNextTurnPlayer = ({ player }) => {
     const nextPlayer = getNextPlayer({ index: player.index })
     return nextPlayer.hasPassed ? this.getNextTurnPlayer({ player: nextPlayer }) : nextPlayer
-  }
-
-  toggleTurn = () => {
-    const { players } = this.props
-    const { currentPlayer } = this.state
-
-    const previousWinners = getPlayers().filter(player => player.isWinPrevious)
-    const nextTurnPlayer = currentPlayer ? this.getNextTurnPlayer({ player: currentPlayer }) : (previousWinners.length === 1 ? previousWinners[0] : players[new Random().integer(0, players.length - 1)])
-
-    this.setState({ currentPlayer: nextTurnPlayer }, () => {
-      this.props.receiveSelectingFrom({ player: nextTurnPlayer, holders: ['hand'] })
-    })
   }
 
   getHoldersFromCard = card => {
@@ -229,7 +225,7 @@ class Board extends Component {
 
   pass = player => {
     this.props.updatePlayer({ ...player, hasPassed: true })
-    getNextPlayer({ index: player.index }).hasPassed ? roundSubject.next({ sequence: this.state.round.sequence + 1 }) : this.toggleTurn()
+    getNextPlayer({ index: player.index }).hasPassed ? roundSubject.next({ sequence: this.state.round.sequence + 1 }) : toggleTurn({ currentPlayer: player })
   }
 
   render() {
@@ -306,7 +302,7 @@ class Board extends Component {
                     Please replace your card, remain: {replacing.remain}
                     <Button color="accent" onClick={() => {
                       if (replacing.currentIndex === holders.hands.length - 1) {
-                        this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)
+                        this.setState({ replacing: { ...replacing, hasDone: true } }, () => { toggleTurn({}) })
                       } else {
                         this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing)
                       }
@@ -330,7 +326,7 @@ class Board extends Component {
                         if (replacing.remain - 1 > 0) {
                           onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
                         } else if (replacing.currentIndex === holders.hands.length - 1) {
-                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, hasDone: true } }, this.toggleTurn)}
+                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, hasDone: true } }, () => { toggleTurn({}) })}
                         } else {
                           onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing) }
                         }

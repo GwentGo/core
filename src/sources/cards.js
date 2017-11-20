@@ -3,8 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../utils/originalCards'
 import { store } from './store'
 import * as actions from '../actions'
-import { turnSubject } from './subjects'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, getCards } from '../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, getCards, toggleTurn } from '../utils'
 import * as derivativeCards from './derivativeCards'
 import * as holders from '../sources/holders'
 
@@ -45,15 +44,15 @@ export const wild_hunt_hound = {
 
 export const ice_giant = {
   tableIn: action => {
-    const { card } = action
+    const { out, card } = action
 
-    const weather = holders.fighters.concat(holders.archers.concat(holders.throwers)).find(holder => holder.weather !== null)
-    if (weather && weather.name === 'frost_hazard' && !card.points.hasFrostHazardIncreased) {
+    const holderWithWeather = holders.fighters.concat(holders.archers, holders.throwers).find(holder => holder.weather !== null)
+    if (holderWithWeather && holderWithWeather.weather.card.name === 'frost_hazard' && !card.points.hasFrostHazardIncreased) {
       card.points.increased += 6
       card.points.hasFrostHazardIncreased = true
     }
 
-    turnSubject.next({ hasDone: true })
+    toggleTurn({ currentPlayer: getCurrentPlayer({ index: out.index }) })
   }
 }
 

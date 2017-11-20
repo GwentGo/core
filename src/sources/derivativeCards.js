@@ -1,6 +1,7 @@
 import uuid from 'uuid/v4'
 
-import { weatherSubject, turnSubject } from './subjects'
+import { weatherSubject } from './subjects'
+import { toggleTurn, getCurrentPlayer } from '../utils'
 
 export const getDerivativeCard = ({ name }) => ({
   id: uuid(),
@@ -10,7 +11,9 @@ export const getDerivativeCard = ({ name }) => ({
 
 export const frost_hazard = {
   tableIn: action => {
-    weatherSubject.next({ holder: action.into, card: action.card })
-    turnSubject.next({ hasDone: true })
+    const { out, into, card } = action
+
+    weatherSubject.next({ holder: into, card: card })
+    toggleTurn({ currentPlayer: getCurrentPlayer({ index: out.index }) })
   }
 }

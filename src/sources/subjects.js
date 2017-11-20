@@ -11,7 +11,7 @@ export const actionSubject = new Subject()
 // weather = { holder, card }
 export const weatherSubject = new Subject()
 
-// turn = { hasDone: true }
+// turn = { player }
 export const turnSubject = new Subject()
 
 // round = { sequence }
@@ -54,5 +54,11 @@ export const subscribeWeatherSubject = () => {
         }
       })
     }
+  })
+}
+
+export const subscribeTurnSubject = () => {
+  turnSubject.subscribe(turn => {
+    console.log(turn.player)
   })
 }

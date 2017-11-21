@@ -23,6 +23,10 @@ const styles = {
     paddingBottom: 16,
     paddingLeft: 8,
   },
+  gridList: {
+    flexWrap: 'nowrap',
+    overflowY: 'auto',
+  },
 }
 
 class Board extends Component {
@@ -267,26 +271,28 @@ class Board extends Component {
               <br/>
 
               <div tag="deck-cards">
-                <Typography type="subheading" gutterBottom>
+                <Typography type="subheading" paragraph>
                   Deck({deckCards.length}):
                 </Typography>
-                <Grid container>
+                <Grid>
+                  <Grid container className={classes.gridList}>
                   {deckCards.map(card => (
                     <Grid key={card.id} item>
                       <Card card={card} />
                     </Grid>
                   ))}
+                  </Grid>
                 </Grid>
               </div>
 
               <br/>
 
               <div tag="hand-cards">
-                <Typography type="subheading" gutterBottom>
+                <Typography type="subheading" paragraph>
                   Hand({handCards.length}):
                 </Typography>
                 {!replacing.hasDone && replacing.currentIndex === hand.index && (
-                  <Typography type="caption" gutterBottom>
+                  <Typography type="caption" paragraph>
                     Please replace your card, remain: {replacing.remain}
                     <Button color="accent" onClick={() => {
                       if (replacing.currentIndex === holders.hands.length - 1) {
@@ -298,11 +304,12 @@ class Board extends Component {
                   </Typography>
                 )}
                 {replacing.hasDone && this.isPlayerMatchWithCurrentPlayer(player) && (
-                  <Typography type="caption" gutterBottom>
+                  <Typography type="caption" paragraph>
                     Please choose:
                   </Typography>
                 )}
-                <Grid container>
+                <Grid>
+                  <Grid container className={classes.gridList}>
                   {handCards.map(card => {
                     let onSelecting = null
                     if (this.isPlayerMatchWithCurrentPlayer(player)) {
@@ -326,6 +333,7 @@ class Board extends Component {
                       </Grid>
                     )
                   })}
+                  </Grid>
                 </Grid>
               </div>
 
@@ -341,19 +349,20 @@ class Board extends Component {
                   <br/>
 
                   <div tag="fighter-cards">
-                    <Typography type="subheading" gutterBottom>
+                    <Typography type="subheading" paragraph>
                       Fighter({fighterCards.length}):
                       {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, fighter) && (
                         <Button color="accent" onClick={() => this.toSelected(fighter)}>select</Button>
                       )}
                     </Typography>
                     {fighter.weather && (
-                      <Typography type="caption" gutterBottom>
+                      <Typography type="caption" paragraph>
                         Weather: {fighter.weather.card.key}
                       </Typography>
                     )}
                     {fighterCards.length > 0 && (
-                      <Grid container>
+                      <Grid>
+                        <Grid container className={classes.gridList}>
                         {fighterCards.map(card => (
                           <Grid key={card.id} item>
                             <div>
@@ -361,6 +370,7 @@ class Board extends Component {
                             </div>
                           </Grid>
                         ))}
+                        </Grid>
                       </Grid>
                     )}
                   </div>
@@ -368,19 +378,20 @@ class Board extends Component {
                   <br/>
 
                   <div tag="archer-cards">
-                    <Typography type="subheading" gutterBottom>
+                    <Typography type="subheading" paragraph>
                       Archer({archerCards.length}):
                       {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, archer) && (
                         <Button color="accent" onClick={() => this.toSelected(archer)}>select</Button>
                       )}
                     </Typography>
                     {archer.weather && (
-                      <Typography type="caption" gutterBottom>
+                      <Typography type="caption" paragraph>
                         Weather: {archer.weather.card.key}
                       </Typography>
                     )}
                     {archerCards.length > 0 && (
-                      <Grid container>
+                      <Grid>
+                        <Grid container className={classes.gridList}>
                         {archerCards.map(card => (
                           <Grid key={card.id} item>
                             <div>
@@ -388,6 +399,7 @@ class Board extends Component {
                             </div>
                           </Grid>
                         ))}
+                        </Grid>
                       </Grid>
                     )}
                   </div>
@@ -395,19 +407,20 @@ class Board extends Component {
                   <br/>
 
                   <div tag="thrower-cards">
-                    <Typography type="subheading" gutterBottom>
+                    <Typography type="subheading" paragraph>
                       Thrower({throwerCards.length}):
                       {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, thrower) && (
                         <Button color="accent" onClick={() => this.toSelected(thrower)}>select</Button>
                       )}
                     </Typography>
                     {thrower.weather && (
-                      <Typography type="caption" gutterBottom>
+                      <Typography type="caption" paragraph>
                         Weather: {thrower.weather.card.key}
                       </Typography>
                     )}
                     {throwerCards.length > 0 && (
-                      <Grid container>
+                      <Grid>
+                        <Grid container className={classes.gridList}>
                         {throwerCards.map(card => (
                           <Grid key={card.id} item>
                             <div>
@@ -415,6 +428,7 @@ class Board extends Component {
                             </div>
                           </Grid>
                         ))}
+                        </Grid>
                       </Grid>
                     )}
                   </div>
@@ -425,16 +439,18 @@ class Board extends Component {
               <br/>
 
               <div tag="tomb-cards">
-                <Typography type="subheading" gutterBottom>
+                <Typography type="subheading" paragraph>
                   Tomb({tombCards.length}):
                 </Typography>
                 {tombCards.length > 0 && (
-                  <Grid container>
+                  <Grid>
+                    <Grid container className={classes.gridList}>
                     {tombCards.map(card => (
                       <Grid key={card.id} item>
                         <Card card={card} />
                       </Grid>
                     ))}
+                    </Grid>
                   </Grid>
                 )}
               </div>
@@ -443,10 +459,11 @@ class Board extends Component {
 
               {pickingCards.length > 0 && (
                 <div tag="picking-cards">
-                  <Typography type="subheading" gutterBottom>
+                  <Typography type="subheading" paragraph>
                     Picking({pickingCards.length}):
                   </Typography>
-                  <Grid container>
+                  <Grid>
+                    <Grid container className={classes.gridList}>
                     {pickingCards.map(card => {
                       let onSelecting = null
                       if (this.isPlayerMatchWithCurrentPlayer(player)) {
@@ -460,6 +477,7 @@ class Board extends Component {
                         </Grid>
                       )
                     })}
+                    </Grid>
                   </Grid>
                 </div>
               )}

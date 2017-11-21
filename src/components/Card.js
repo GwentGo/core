@@ -9,8 +9,7 @@ import { calculatePoints } from '../utils'
 
 const styles = {
   media: {
-    width: 100,
-    height: 120,
+    width: 160,
   },
 }
 
@@ -21,8 +20,8 @@ class CardComponent extends Component {
     return (
       <Card>
         <CardContent>
-          <Typography gutterBottom>{calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened}) {card.type}</Typography>
-          <CardMedia className={classes.media} image={`/images/cards/${card.key}.png`} title={card.abilities} />
+          <Typography gutterBottom>{calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened})</Typography>
+          <img className={classes.media} src={`/images/cards/${card.key}.png`} title={card.abilities} />
           <Typography>{card.name}</Typography>
         </CardContent>
         {onSelecting && (

@@ -11,7 +11,7 @@ export const { frost_hazard } = derivativeCards
 
 export const eredin = {
   tableIn: action => {
-    const associationCards = originalCards.filter(card => card.name.indexOf('wild_hunt') !== -1 && card.type === 'Bronze').map(card => ({
+    const associationCards = originalCards.filter(card => card.key.indexOf('wild_hunt') !== -1 && card.type === 'Bronze').map(card => ({
       id: uuid(),
       pickingIndex: action.into.index,
       ...card,
@@ -29,8 +29,8 @@ export const wild_hunt_hound = {
     const deckCards = getCards({ type: 'deck', index: out.index })
     const handCards = getCards({ type: 'hand', index: out.index })
 
-    const foundFromDeck = deckCards.find(card => card.name === 'biting_frost')
-    const biting_frost = foundFromDeck ? foundFromDeck : handCards.find(card => card.name === 'biting_frost')
+    const foundFromDeck = deckCards.find(card => card.key === 'biting_frost')
+    const biting_frost = foundFromDeck ? foundFromDeck : handCards.find(card => card.key === 'biting_frost')
     if (biting_frost) {
       act({ out: getHolder({ type: foundFromDeck ? 'deck' : 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
     } else {
@@ -48,7 +48,7 @@ export const ice_giant = {
     const { out, card } = action
 
     const holderWithWeather = holders.fighters.concat(holders.archers, holders.throwers).find(holder => holder.weather !== null)
-    if (holderWithWeather && holderWithWeather.weather.card.name === 'frost_hazard' && !card.hasFrostHazardBoosted) {
+    if (holderWithWeather && holderWithWeather.weather.card.key === 'frost_hazard' && !card.hasFrostHazardBoosted) {
       card.boosted += 6
       card.hasFrostHazardBoosted = true
     }
@@ -64,7 +64,7 @@ export const biting_frost = {
     store.dispatch(actions.receiveSelectingTo({
       player: getNextPlayer({ index: out.index }),
       holders: ['fighter', 'archer', 'thrower'],
-      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCard({ name: 'frost_hazard' }) }),
+      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCard({ key: 'frost_hazard' }) }),
     }))
 
     act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })

@@ -3,10 +3,10 @@ import uuid from 'uuid/v4'
 import { weatherSubject } from './subjects'
 import { toggleTurn, getCurrentPlayer } from '../utils'
 
-export const getDerivativeCard = ({ name }) => ({
+export const getDerivativeCard = ({ key }) => ({
   id: uuid(),
   row: 'Special',
-  name,
+  key,
 })
 
 export const frost_hazard = {

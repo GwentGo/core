@@ -349,7 +349,7 @@ class Board extends Component {
                     </Typography>
                     {fighter.weather && (
                       <Typography type="caption" gutterBottom>
-                        Weather: {fighter.weather.card.name}
+                        Weather: {fighter.weather.card.key}
                       </Typography>
                     )}
                     {fighterCards.length > 0 && (
@@ -376,7 +376,7 @@ class Board extends Component {
                     </Typography>
                     {archer.weather && (
                       <Typography type="caption" gutterBottom>
-                        Weather: {archer.weather.card.name}
+                        Weather: {archer.weather.card.key}
                       </Typography>
                     )}
                     {archerCards.length > 0 && (
@@ -403,7 +403,7 @@ class Board extends Component {
                     </Typography>
                     {thrower.weather && (
                       <Typography type="caption" gutterBottom>
-                        Weather: {thrower.weather.card.name}
+                        Weather: {thrower.weather.card.key}
                       </Typography>
                     )}
                     {throwerCards.length > 0 && (

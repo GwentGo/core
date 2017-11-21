@@ -1,5 +1,5 @@
 import players from './players'
-import cards from './developingCards'
+import cards from './cards'
 
 const fetch = source => {
   return new Promise((resolve, reject) => {

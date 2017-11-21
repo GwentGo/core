@@ -11,13 +11,12 @@ export const { frost_hazard } = derivativeCards
 
 export const eredin = {
   tableIn: action => {
-    const associationCards = originalCards.filter(card => card.name.indexOf('wild_hunt') !== -1 && card.type === 'Bronze')
-
-    store.dispatch(actions.addCards(associationCards.map(card => ({
+    const associationCards = originalCards.filter(card => card.name.indexOf('wild_hunt') !== -1 && card.type === 'Bronze').map(card => ({
       id: uuid(),
       pickingIndex: action.into.index,
       ...card,
-    }))))
+    }))
+    store.dispatch(actions.addCards(associationCards))
 
     store.dispatch(actions.receiveSelectingFrom({ player: getCurrentPlayer, holders: ['picking'] }))
   }
@@ -33,7 +32,9 @@ export const wild_hunt_hound = {
     const foundFromDeck = deckCards.find(card => card.name === 'biting_frost')
     const biting_frost = foundFromDeck ? foundFromDeck : handCards.find(card => card.name === 'biting_frost')
     if (biting_frost) {
-      act({ out: getHolder({ type: 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
+      act({ out: getHolder({ type: foundFromDeck ? 'deck' : 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
+    } else {
+      toggleTurn({ currentPlayer: getCurrentPlayer({ index: out.index }) })
     }
   },
   pickingOut: action => {
@@ -47,9 +48,9 @@ export const ice_giant = {
     const { out, card } = action
 
     const holderWithWeather = holders.fighters.concat(holders.archers, holders.throwers).find(holder => holder.weather !== null)
-    if (holderWithWeather && holderWithWeather.weather.card.name === 'frost_hazard' && !card.points.hasFrostHazardIncreased) {
-      card.points.increased += 6
-      card.points.hasFrostHazardIncreased = true
+    if (holderWithWeather && holderWithWeather.weather.card.name === 'frost_hazard' && !card.hasFrostHazardBoosted) {
+      card.boosted += 6
+      card.hasFrostHazardBoosted = true
     }
 
     toggleTurn({ currentPlayer: getCurrentPlayer({ index: out.index }) })

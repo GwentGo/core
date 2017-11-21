@@ -3,7 +3,7 @@ import { Subject } from 'rxjs/Subject'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculate, getPlayers, getTableCards } from '../utils'
+import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -37,7 +37,7 @@ export const subscribeActionSubject = () => {
 
   actionSubject.subscribe(() => {
     getPlayers().forEach(player => {
-      store.dispatch(actions.updatePlayer({ ...player, power: calculate(getTableCards({ index: player.index })) }))
+      store.dispatch(actions.updatePlayer({ ...player, power: calculate({ cards: getTableCards({ index: player.index }) }) }))
     })
   })
 }
@@ -48,9 +48,9 @@ export const subscribeWeatherSubject = () => {
 
     if (weather.card && weather.card.name === 'frost_hazard') {
       getTableCards({}).forEach(card => {
-        if (card.name === 'ice_giant' && !card.points.hasFrostHazardIncreased) {
-          card.points.increased += 6
-          card.points.hasFrostHazardIncreased = true
+        if (card.name === 'ice_giant' && !card.hasFrostHazardBoosted) {
+          card.boosted += 6
+          card.hasFrostHazardBoosted = true
         }
       })
     }
@@ -58,7 +58,16 @@ export const subscribeWeatherSubject = () => {
 }
 
 export const subscribeTurnSubject = () => {
-  turnSubject.subscribe(turn => {
-    console.log(turn.player)
+  turnSubject.subscribe(({ player }) => {
+    ['fighter', 'archer', 'thrower'].forEach(holderType => {
+      const holder = getHolder({ type: holderType, index: player.index })
+      if (holder.weather && holder.weather.card.name === 'frost_hazard') {
+        const cards = getCards({ type: holderType, index: player.index })
+        if (cards.length > 0) {
+          const lowestPointsCard = cards.reduce((acc, card) => (calculatePoints({ card }) < calculatePoints({ card: acc }) ? card : acc), cards[0])
+          demage({ card: lowestPointsCard, value: 2 })
+        }
+      }
+    })
   })
 }

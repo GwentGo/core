@@ -12,6 +12,7 @@ cards = [{
   archerIndex: xxx,
   throwerIndex: xxx,
   pickingIndex: xxx,
+  tombIndex: xxx,
 }]
 
 selecting: {

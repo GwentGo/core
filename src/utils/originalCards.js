@@ -4817,11 +4817,8 @@ const cards = {
 const originalCards = Object.keys(cards).map(key => ({
   name: key,
   ...cards[key],
-  points: {
-    original: cards[key].power,
-    increased: 0,
-    consolidated: 0,
-  },
+  boosted: 0,
+  strengthened: 0,
 }))
 
 export default originalCards

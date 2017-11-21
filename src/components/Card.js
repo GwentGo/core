@@ -13,7 +13,7 @@ class CardComponent extends Component {
     return (
       <Card>
         <CardContent>
-          <Typography type="body2">{calculatePoints({ card })} ({card.points.original}+{card.points.increased}+{card.points.consolidated}) {card.type}</Typography>
+          <Typography type="body2">{calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened}) {card.type}</Typography>
           <Typography type="title">{card.name_en}</Typography>
         </CardContent>
         {onSelecting && (

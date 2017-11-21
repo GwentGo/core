@@ -16,24 +16,20 @@ export const getNextPlayer = ({ index }) => {
   return players[currentPlayer.index + 1 > players.length - 1 ? 0 : currentPlayer.index + 1]
 }
 
-export const getNextTurnPlayer = ({ index }) => {
-  const nextPlayer = getNextPlayer({ index })
-  return nextPlayer.hasPassed ? getNextTurnPlayer({ index: nextPlayer.index }) : nextPlayer
-}
-
 export const toggleTurn = ({ currentPlayer }) => {
   const players = getPlayers()
   const previousWinners = players.filter(player => player.isWinPrevious)
-  const nextTurnPlayer = currentPlayer ? getNextTurnPlayer({ index: currentPlayer.index }) : (previousWinners.length === 1 ? previousWinners[0] : players[new Random().integer(0, players.length - 1)])
+  const nextPlayer = currentPlayer ? getNextPlayer({ index: currentPlayer.index }) : (previousWinners.length === 1 ? previousWinners[0] : players[new Random().integer(0, players.length - 1)])
 
-  turnSubject.next({ player: nextTurnPlayer })
+  turnSubject.next({ player: nextPlayer })
 }
 
 export const act = action => {
   const {out, into, card} = action
 
-  store.dispatch(actions.updateCard({...card, [`${out.type}Index`]: '', [`${into.type}Index`]: into.index }))
-  actionSubject.next(action)
+  const modifiedCard = {...card, [`${out.type}Index`]: '', [`${into.type}Index`]: into.index }
+  store.dispatch(actions.updateCard(modifiedCard))
+  actionSubject.next({ out, into, card: modifiedCard })
 }
 
 export const getHolder = ({ type, index }) => {
@@ -56,10 +52,23 @@ export const getPlayers = () => {
   return store.getState().players
 }
 
-export const calculate = cards => {
+export const calculate = ({ cards }) => {
   return cards.reduce((acc, card) => (acc + calculatePoints({ card })), 0)
 }
 
 export const calculatePoints = ({ card }) => {
-  return card.points.original + card.points.increased + card.points.consolidated
+  return card.power + card.boosted + card.strengthened
+}
+
+export const findHolderType = ({ card }) => {
+  return ['deck', 'hand', 'fighter', 'archer', 'thrower'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
+}
+
+export const demage = ({ card, value }) => {
+  card.boosted -= value
+
+  if (calculatePoints({ card }) <= 0) {
+    const holderType = findHolderType({ card })
+    store.dispatch(actions.updateCard({...card, [`${holderType}Index`]: '', 'tombIndex': card[`${holderType}Index`] }))
+  }
 }

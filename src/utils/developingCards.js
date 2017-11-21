@@ -488,9 +488,6 @@ const cards2 = [{
 
 export default cards1.concat(cards2).map(card => ({
   ...card,
-  points: {
-    original: card.power,
-    increased: 0,
-    consolidated: 0,
-  },
+  boosted: 0,
+  strengthened: 0,
 }))

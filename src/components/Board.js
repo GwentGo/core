@@ -49,7 +49,7 @@ class Board extends Component {
 
     subscribeTurnSubject()
     turnSubject.subscribe(turn => {
-      turn.player && this.setupTurn(turn)
+      turn.player.hasPassed ? toggleTurn({ currentPlayer: turn.player }) : this.setupTurn(turn)
     })
 
     roundSubject.subscribe(round => {
@@ -100,16 +100,11 @@ class Board extends Component {
   }
 
   judge = () => {
-    let highestPower = 0
-    getPlayers().forEach(player => {
-      if (player.power > highestPower) {
-        highestPower = player.power
-      }
-    })
+    const playerWithHighestPower = getPlayers().reduce((acc, player) => (player.power > acc.power ? player : acc), { power: -Infinity })
 
     getPlayers().forEach(player => {
       let values = { ...player, hasPassed: false, isWinPrevious: false, power: 0 }
-      if (player.power === highestPower) {
+      if (player.power === playerWithHighestPower.power) {
         values = { ...values, wins: ++player.wins, isWinPrevious: true }
       }
       this.props.updatePlayer({ ...values })
@@ -117,14 +112,7 @@ class Board extends Component {
   }
 
   isFinished = () => {
-    let mostWins = 0
-    getPlayers().forEach(player => {
-      if (player.wins > mostWins) {
-        mostWins = player.wins
-      }
-    })
-
-    return mostWins === 2
+    return getPlayers().reduce((acc, player) => (player.wins > acc.wins ? player : acc), { wins: -Infinity }).wins === 2
   }
 
   setupHandCards = () => {

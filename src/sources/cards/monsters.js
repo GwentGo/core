@@ -1,13 +1,10 @@
 import uuid from 'uuid/v4'
 
-import originalCards from '../utils/originalCards'
-import { store } from './store'
-import * as actions from '../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, getCards, toggleTurn } from '../utils'
-import * as derivativeCards from './derivativeCards'
-import * as holders from '../sources/holders'
-
-export const { frost_hazard } = derivativeCards
+import originalCards from '../../utils/originalCards'
+import { store } from '../store'
+import * as actions from '../../actions'
+import { act, getHolder, getCurrentPlayer, getCards, toggleTurn } from '../../utils'
+import * as holders from '../../sources/holders'
 
 export const eredin = {
   tableIn: action => {
@@ -18,7 +15,7 @@ export const eredin = {
     }))
     store.dispatch(actions.addCards(associationCards))
 
-    store.dispatch(actions.receiveSelectingFrom({ player: getCurrentPlayer, holders: ['picking'] }))
+    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer, holders: ['picking'] }))
   }
 }
 
@@ -57,16 +54,4 @@ export const ice_giant = {
   }
 }
 
-export const biting_frost = {
-  tableIn: action => {
-    const { out, into, card } = action
 
-    store.dispatch(actions.receiveSelectingTo({
-      player: getNextPlayer({ index: out.index }),
-      holders: ['fighter', 'archer', 'thrower'],
-      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivativeCards.getDerivativeCard({ key: 'frost_hazard' }) }),
-    }))
-
-    act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
-  }
-}

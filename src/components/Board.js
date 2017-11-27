@@ -135,13 +135,13 @@ class Board extends Component {
 
   setupTurn = turn => {
     this.setState({ currentPlayer: turn.player }, () => {
-      this.props.receiveSelectingFrom({ player: turn.player, holders: ['hand'] })
+      this.props.selectingFrom({ player: turn.player, holders: ['hand'] })
     })
   }
 
   replacing = () => {
     const player = this.props.players.find(player => player.index === this.state.replacing.currentIndex)
-    this.props.receiveSelectingFrom({ player, holders: ['hand'] })
+    this.props.selectingFrom({ player, holders: ['hand'] })
   }
 
   replaceCard = card => {
@@ -198,20 +198,20 @@ class Board extends Component {
   }
 
   fromSelected = (holder, card) => {
-    this.props.receiveSelectingFrom(null)
+    this.props.selectingFrom(null)
 
     if (card.row.indexOf('Special') !== -1) {
-      this.props.receiveSelectingTo(null)
+      this.props.selectingTo(null)
 
       const table = getHolder({ type: 'table', index: holder.index })
       act({ out: holder, into: table, card })
     } else {
-      this.props.receiveSelectingTo({ player: getNextPlayer({ index: holder.index }), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+      this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
     }
   }
 
   toSelected = holder => {
-    this.props.receiveSelectingTo(null)
+    this.props.selectingTo(null)
     act(this.props.selecting.to.curriedAction(holder))
   }
 

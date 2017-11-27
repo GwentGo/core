@@ -6,8 +6,9 @@ export const RECEIVE_CARDS = 'RECEIVE_CARDS'
 export const UPDATE_CARD = 'UPDATE_CARD'
 export const ADD_CARDS = 'ADD_CARDS'
 export const REMOVE_CARDS = 'REMOVE_CARDS'
-export const RECEIVE_SELECTING_FROM = 'RECEIVE_SELECTING_FROM'
-export const RECEIVE_SELECTING_TO = 'RECEIVE_SELECTING_TO'
+export const SELECTING_FROM = 'SELECTING_FROM'
+export const SELECTING_TO = 'SELECTING_TO'
+export const SELECTING_SPECIFIC = 'SELECTING_SPECIFIC'
 
 export const receivePlayers = players => ({ type: RECEIVE_PLAYERS, players })
 export const updatePlayer = player => ({ type: UPDATE_PLAYER, player })
@@ -32,5 +33,6 @@ export const addCards = cards => ({ type: ADD_CARDS, cards })
 
 export const removeCards = cards => ({ type: REMOVE_CARDS, cards })
 
-export const receiveSelectingFrom = from => ({ type: RECEIVE_SELECTING_FROM, from })
-export const receiveSelectingTo = to => ({ type: RECEIVE_SELECTING_TO, to })
+export const selectingFrom = from => ({ type: SELECTING_FROM, from })
+export const selectingTo = to => ({ type: SELECTING_TO, to })
+export const selectingSpecific = specific => ({ type: SELECTING_SPECIFIC, specific })

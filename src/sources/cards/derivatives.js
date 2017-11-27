@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4'
 
-import { weatherSubject } from './subjects'
-import { toggleTurn, getCurrentPlayer } from '../utils'
+import { weatherSubject } from '../subjects'
+import { toggleTurn, getCurrentPlayer } from '../../utils'
 
 export const getDerivativeCard = ({ key }) => ({
   id: uuid(),

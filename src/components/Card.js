@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import { withStyles } from 'material-ui/styles'
-import Card, { CardContent, CardActions, CardMedia } from 'material-ui/Card'
+import Card, { CardContent, CardActions } from 'material-ui/Card'
 import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 
@@ -21,7 +21,7 @@ class CardComponent extends Component {
       <Card>
         <CardContent>
           <Typography gutterBottom>{calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened})</Typography>
-          <img className={classes.media} src={`/images/cards/${card.key}.png`} title={card.abilities} />
+          <img className={classes.media} src={`/images/cards/${card.key}.png`} alt="" title={card.abilities} />
           <Typography>{card.name}</Typography>
         </CardContent>
         {onSelecting && (

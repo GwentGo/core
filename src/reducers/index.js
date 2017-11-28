@@ -23,13 +23,13 @@ selecting: {
   to: {
     player,
     holders: ['fighter', 'archer', 'thrower'],
-    curriedAction: xxx,
+    curriedAction: 'function that returns the action object',
   },
   specific: {
+    card,
     players: [],
     holders: ['hand', 'fighter', 'archer', 'thrower'],
-    number: xxx,
-    curriedAction: xxx,
+    numbers: xxx,
   }
 }
 
@@ -82,7 +82,7 @@ const selecting = (state = {}, action) => {
     case SELECTING_TO:
       return { ...state, to: action.to }
     case SELECTING_SPECIFIC:
-      return { ...state, to: action.specific }
+      return { ...state, specific: action.specific }
     default:
       return state
   }

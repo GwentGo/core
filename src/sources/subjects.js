@@ -17,6 +17,9 @@ export const turnSubject = new Subject()
 // round = { sequence }
 export const roundSubject = new Subject()
 
+// specific = { card, specificCards }
+export const specificSubject = new Subject()
+
 export const subscribeActionSubject = () => {
   actionSubject.subscribe(action => {
     const { out, into, card } = action
@@ -69,5 +72,12 @@ export const subscribeTurnSubject = () => {
         }
       }
     })
+  })
+}
+
+export const subscribeSpecificSubject = () => {
+  specificSubject.subscribe(specific => {
+    const specificFunction = cards[specific.card.key]['specific']
+    specificFunction && specificFunction(specific)
   })
 }

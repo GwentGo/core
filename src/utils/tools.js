@@ -1,9 +1,9 @@
 import Random from 'random-js'
 
-export const getRandomCards = (cards, options = {number: 10}) => {
+export const getRandomCards = (cards, options = {numbers: 10}) => {
   const arr = []
 
-  for (let i = 0; i < options.number; i++) {
+  for (let i = 0; i < options.numbers; i++) {
     const randomIndex = new Random().integer(0, cards.length - 1)
     if (cards[randomIndex]) {
       arr.push(cards[randomIndex])

@@ -15,7 +15,7 @@ const styles = {
 
 class CardComponent extends Component {
   render() {
-    const { card, onSelecting, classes } = this.props
+    const { card, onSelect, classes } = this.props
 
     return (
       <Card>
@@ -24,9 +24,9 @@ class CardComponent extends Component {
           <img className={classes.media} src={`/images/cards/${card.key}.png`} alt="" title={card.abilities} />
           <Typography>{card.name}</Typography>
         </CardContent>
-        {onSelecting && (
+        {onSelect && (
           <CardActions>
-            <Button color="accent" onClick={onSelecting}>select</Button>
+            <Button color="accent" onClick={onSelect}>select</Button>
           </CardActions>
         )}
       </Card>

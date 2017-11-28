@@ -72,3 +72,11 @@ export const demage = ({ card, value }) => {
     store.dispatch(actions.updateCard({...card, [`${holderType}Index`]: '', 'tombIndex': card[`${holderType}Index`] }))
   }
 }
+
+export const getIndex = ({ card }) => {
+  return card[`${findHolderType({ card })}Index`]
+}
+
+export const getSelectableCards = ({ card, players }) => {
+  return players.reduce((acc, player) => (acc.concat(getTableCards({ index: player.index }))), []).filter(c => c.id !== card.id)
+}

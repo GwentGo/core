@@ -12,7 +12,7 @@ import amber from 'material-ui/colors/amber'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject, subscribeTurnSubject } from '../sources/subjects'
+import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject, subscribeTurnSubject, specificSubject, subscribeSpecificSubject } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
 import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn } from '../utils'
 
@@ -34,11 +34,12 @@ class Board extends Component {
     currentPlayer: null,
     replacing: {
       currentIndex: -1,
-      number: 0,
+      numbers: 0,
       remain: 0,
       hasDone: true,
     },
     round: null,
+    specificCards: [],
   }
 
   componentDidMount() {
@@ -50,12 +51,12 @@ class Board extends Component {
 
     subscribeActionSubject()
     subscribeWeatherSubject()
-
     subscribeTurnSubject()
+    subscribeSpecificSubject()
+
     turnSubject.subscribe(turn => {
       turn.player.hasPassed ? toggleTurn({ currentPlayer: turn.player }) : this.setupTurn(turn)
     })
-
     roundSubject.subscribe(round => {
       this.clearTable()
       this.setState({ round }, () => { this.prepareRound(round) })
@@ -77,7 +78,7 @@ class Board extends Component {
     if (round.sequence === 1) {
       this.setState({replacing: {
         currentIndex: 0,
-        number: 3,
+        numbers: 3,
         remain: 3,
         hasDone: false,
       }}, this.replacing)
@@ -86,7 +87,7 @@ class Board extends Component {
 
       getPlayers().forEach(player => {
         const deckCards = getCards({ type: 'deck', index: player.index })
-        getRandomCards(deckCards, { number: round.sequence === 2 ? 2 : 1 }).forEach(card => {
+        getRandomCards(deckCards, { numbers: round.sequence === 2 ? 2 : 1 }).forEach(card => {
           this.props.updateCard({ ...card, deckIndex: '', handIndex: player.index })
         })
       })
@@ -95,7 +96,7 @@ class Board extends Component {
         currentPlayer: null,
         replacing: {
           currentIndex: this.isFinished() ? -1 : 0,
-          number: 1,
+          numbers: 1,
           remain: 1,
           hasDone: false,
         },
@@ -127,7 +128,7 @@ class Board extends Component {
       this.props.updateCard({ ...leader, deckIndex: '', handIndex: hand.index })
 
       const deckCards = this.props.cards.filter(card => card.deckIndex === deck.index && card.type !== 'Leader')
-      getRandomCards(deckCards, { number: 10 }).forEach(card => {
+      getRandomCards(deckCards, { numbers: 10 }).forEach(card => {
         this.props.updateCard({ ...card, deckIndex: '', handIndex: hand.index })
       })
     })
@@ -149,13 +150,8 @@ class Board extends Component {
     this.props.updateCard({ ...card, handIndex: '', deckIndex: replacing.currentIndex })
 
     const deckCards = this.props.cards.filter(card => card.deckIndex === replacing.currentIndex)
-    const randomCard = getRandomCards(deckCards, { number: 1 })[0]
+    const randomCard = getRandomCards(deckCards, { numbers: 1 })[0]
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
-  }
-
-  getNextTurnPlayer = ({ player }) => {
-    const nextPlayer = getNextPlayer({ index: player.index })
-    return nextPlayer.hasPassed ? this.getNextTurnPlayer({ player: nextPlayer }) : nextPlayer
   }
 
   getHoldersFromCard = card => {
@@ -193,6 +189,10 @@ class Board extends Component {
     return card.row.indexOf('Special') !== -1 ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
   }
 
+  isPlayerMatchWithSelectingPlayers = player => {
+    return this.props.selecting.specific.players.find(p => p.index === player.index)
+  }
+
   isHolderMatch = (holders, holder) => {
     return holders.indexOf(holder.type) !== -1
   }
@@ -222,7 +222,7 @@ class Board extends Component {
 
   render() {
     const { players, cards, selecting, classes } = this.props
-    const { replacing, currentPlayer } = this.state
+    const { replacing, currentPlayer, specificCards } = this.state
 
     return (
       <div>
@@ -234,13 +234,8 @@ class Board extends Component {
           const handCards = cards.filter(card => card.handIndex === hand.index)
 
           const fighter = holders.fighters.find(fighter => fighter.index === player.index)
-          const fighterCards = cards.filter(card => card.fighterIndex === fighter.index)
-
           const archer = holders.archers.find(archer => archer.index === player.index)
-          const archerCards = cards.filter(card => card.archerIndex === archer.index)
-
           const thrower = holders.throwers.find(thrower => thrower.index === player.index)
-          const throwerCards = cards.filter(card => card.throwerIndex === thrower.index)
 
           const picking = holders.pickings.find(picking => picking.index === player.index)
           const pickingCards = cards.filter(card => card.pickingIndex === picking.index)
@@ -263,7 +258,7 @@ class Board extends Component {
                 <Typography type="subheading" gutterBottom>
                   Power: {player.power}
                 </Typography>
-                {currentPlayer && currentPlayer.id === player.id && (
+                {currentPlayer && currentPlayer.id === player.id && !selecting.to && !selecting.specific && (
                   <Button raised color="accent" onClick={() => { this.pass(player) }}>Pass</Button>
                 )}
               </div>
@@ -298,7 +293,7 @@ class Board extends Component {
                       if (replacing.currentIndex === holders.hands.length - 1) {
                         this.setState({ replacing: { ...replacing, hasDone: true } }, () => { toggleTurn({}) })
                       } else {
-                        this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing)
+                        this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.numbers } }, this.replacing)
                       }
                     }}>finish</Button>
                   </Typography>
@@ -311,25 +306,25 @@ class Board extends Component {
                 <Grid>
                   <Grid container className={classes.gridList}>
                   {handCards.map(card => {
-                    let onSelecting = null
+                    let onSelect = null
                     if (this.isPlayerMatchWithCurrentPlayer(player)) {
                       if (replacing.hasDone) {
                         if (selecting.from && this.isHolderMatch(selecting.from.holders, hand)) {
-                          onSelecting = () => this.fromSelected(hand, card)
+                          onSelect = () => this.fromSelected(hand, card)
                         }
                       } else if (card.type !== 'Leader') {
                         if (replacing.remain - 1 > 0) {
-                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
+                          onSelect = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, remain: replacing.remain - 1 } }) }
                         } else if (replacing.currentIndex === holders.hands.length - 1) {
-                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, hasDone: true } }, () => { toggleTurn({}) })}
+                          onSelect = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, hasDone: true } }, () => { toggleTurn({}) })}
                         } else {
-                          onSelecting = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.number } }, this.replacing) }
+                          onSelect = () => { this.replaceCard(card); this.setState({ replacing: { ...replacing, currentIndex: replacing.currentIndex + 1, remain: replacing.numbers } }, this.replacing) }
                         }
                       }
                     }
                     return (
                       <Grid key={card.id} item>
-                        <Card card={card} onSelecting={onSelecting} />
+                        <Card card={card} onSelect={onSelect} />
                       </Grid>
                     )
                   })}
@@ -348,91 +343,51 @@ class Board extends Component {
 
                   <br/>
 
-                  <div tag="fighter-cards">
-                    <Typography type="subheading" paragraph>
-                      Fighter({fighterCards.length}):
-                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, fighter) && (
-                        <Button color="accent" onClick={() => this.toSelected(fighter)}>select</Button>
-                      )}
-                    </Typography>
-                    {fighter.weather && (
-                      <Typography type="caption" paragraph>
-                        Weather: {fighter.weather.card.key}
-                      </Typography>
-                    )}
-                    {fighterCards.length > 0 && (
-                      <Grid>
-                        <Grid container className={classes.gridList}>
-                        {fighterCards.map(card => (
-                          <Grid key={card.id} item>
-                            <div>
-                              <Card card={card} />
-                            </div>
+                  {[fighter, archer, thrower].map(holder => {
+                    const holderCards = cards.filter(card => card[`${holder.type}Index`] === holder.index)
+
+                    return (
+                      <div tag={`${holder.type}-cards`} key={holder.type}>
+                        <Typography type="subheading" paragraph>
+                          {holder.type}({holderCards.length}):
+                          {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, holder) && (
+                            <Button color="accent" onClick={() => this.toSelected(holder)}>select</Button>
+                          )}
+                        </Typography>
+                        {holder.weather && (
+                          <Typography type="caption" paragraph>
+                            Weather: {holder.weather.card.key}
+                          </Typography>
+                        )}
+                        {holderCards.length > 0 && (
+                          <Grid>
+                            <Grid container className={classes.gridList}>
+                            {holderCards.map(card => {
+                              let onSelect = null
+                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.card.id !== card.id) {
+                                if (specificCards.length + 1 === selecting.specific.numbers) {
+                                  onSelect = () => {
+                                    specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })
+                                    this.props.selectingSpecific(null)
+                                    this.setState({ specificCards: [] })
+                                  }
+                                } else {
+                                  onSelect = () => this.setState({ specificCards: specificCards.concat(card) })
+                                }
+                              }
+                              return (
+                                <Grid key={card.id} item>
+                                  <Card card={card} onSelect={onSelect} />
+                                </Grid>
+                              )
+                            })}
+                            </Grid>
                           </Grid>
-                        ))}
-                        </Grid>
-                      </Grid>
-                    )}
-                  </div>
-
-                  <br/>
-
-                  <div tag="archer-cards">
-                    <Typography type="subheading" paragraph>
-                      Archer({archerCards.length}):
-                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, archer) && (
-                        <Button color="accent" onClick={() => this.toSelected(archer)}>select</Button>
-                      )}
-                    </Typography>
-                    {archer.weather && (
-                      <Typography type="caption" paragraph>
-                        Weather: {archer.weather.card.key}
-                      </Typography>
-                    )}
-                    {archerCards.length > 0 && (
-                      <Grid>
-                        <Grid container className={classes.gridList}>
-                        {archerCards.map(card => (
-                          <Grid key={card.id} item>
-                            <div>
-                              <Card card={card} />
-                            </div>
-                          </Grid>
-                        ))}
-                        </Grid>
-                      </Grid>
-                    )}
-                  </div>
-                  
-                  <br/>
-
-                  <div tag="thrower-cards">
-                    <Typography type="subheading" paragraph>
-                      Thrower({throwerCards.length}):
-                      {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, thrower) && (
-                        <Button color="accent" onClick={() => this.toSelected(thrower)}>select</Button>
-                      )}
-                    </Typography>
-                    {thrower.weather && (
-                      <Typography type="caption" paragraph>
-                        Weather: {thrower.weather.card.key}
-                      </Typography>
-                    )}
-                    {throwerCards.length > 0 && (
-                      <Grid>
-                        <Grid container className={classes.gridList}>
-                        {throwerCards.map(card => (
-                          <Grid key={card.id} item>
-                            <div>
-                              <Card card={card} />
-                            </div>
-                          </Grid>
-                        ))}
-                        </Grid>
-                      </Grid>
-                    )}
-                  </div>
-
+                        )}
+                        <br/>
+                      </div>
+                    )
+                  })}
                 </Paper>
               </div>
 
@@ -465,15 +420,15 @@ class Board extends Component {
                   <Grid>
                     <Grid container className={classes.gridList}>
                     {pickingCards.map(card => {
-                      let onSelecting = null
+                      let onSelect = null
                       if (this.isPlayerMatchWithCurrentPlayer(player)) {
                         if (selecting.from && this.isHolderMatch(selecting.from.holders, picking)) {
-                          onSelecting = () => this.fromSelected(picking, card)
+                          onSelect = () => this.fromSelected(picking, card)
                         }
                       }
                       return (
                         <Grid key={card.id} item>
-                          <Card card={card} onSelecting={onSelecting} />
+                          <Card card={card} onSelect={onSelect} />
                         </Grid>
                       )
                     })}

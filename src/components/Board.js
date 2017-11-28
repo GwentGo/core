@@ -63,6 +63,15 @@ class Board extends Component {
     })
   }
 
+  componentDidUpdate() {
+    const { selecting } = this.props
+
+    if (selecting.specific && selecting.specific.numbers === 0) {
+      specificSubject.next({ card: selecting.specific.card, specificCards: [] })
+      this.props.selectingSpecific(null)
+    }
+  }
+
   clearTable = () => {
     getPlayers().forEach(player => {
       const tableCards = getTableCards({ index: player.index })
@@ -364,7 +373,7 @@ class Board extends Component {
                             <Grid container className={classes.gridList}>
                             {holderCards.map(card => {
                               let onSelect = null
-                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.card.id !== card.id) {
+                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && selecting.specific.card.id !== card.id) {
                                 if (specificCards.length + 1 === selecting.specific.numbers) {
                                   onSelect = () => {
                                     specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })

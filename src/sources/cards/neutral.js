@@ -20,15 +20,11 @@ export const biting_frost = {
 export const swallow_potion = {
   tableIn: action => {
     const { out, into, card } = action
-    const currentPlayer = getCurrentPlayer({ index: out.index })
-    const players = [currentPlayer]
 
+    const players = [getCurrentPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players })
-    if (selectableCards.length === 0) {
-      toggleTurn({ currentPlayer })
-    } else {
-      store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], numbers: Math.min(1, selectableCards.length) }))
-    }
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], numbers }))
 
     act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   },

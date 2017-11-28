@@ -61,7 +61,7 @@ export const calculatePoints = ({ card }) => {
 }
 
 export const findHolderType = ({ card }) => {
-  return ['deck', 'hand', 'fighter', 'archer', 'thrower'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
+  return ['deck', 'hand', 'fighter', 'archer', 'thrower', 'table'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
 }
 
 export const demage = ({ card, value }) => {
@@ -71,6 +71,10 @@ export const demage = ({ card, value }) => {
     const holderType = findHolderType({ card })
     store.dispatch(actions.updateCard({...card, [`${holderType}Index`]: '', 'tombIndex': card[`${holderType}Index`] }))
   }
+}
+
+export const boost = ({ card, value }) => {
+  card.boosted += value
 }
 
 export const getIndex = ({ card }) => {

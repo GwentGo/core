@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../../utils/originalCards'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, toggleTurn } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, toggleTurn, boost } from '../../utils'
 import * as holders from '../../sources/holders'
 
 export const eredin = {
@@ -46,7 +46,7 @@ export const ice_giant = {
 
     const holderWithWeather = holders.fighters.concat(holders.archers, holders.throwers).find(holder => holder.weather !== null)
     if (holderWithWeather && holderWithWeather.weather.card.key === 'frost_hazard' && !card.hasFrostHazardBoosted) {
-      card.boosted += 6
+      boost({ card, value: 6 })
       card.hasFrostHazardBoosted = true
     }
 

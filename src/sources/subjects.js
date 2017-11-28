@@ -3,7 +3,7 @@ import { Subject } from 'rxjs/Subject'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage } from '../utils'
+import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage, boost } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -52,7 +52,7 @@ export const subscribeWeatherSubject = () => {
     if (weather.card && weather.card.key === 'frost_hazard') {
       getTableCards({}).forEach(card => {
         if (card.key === 'ice_giant' && !card.hasFrostHazardBoosted) {
-          card.boosted += 6
+          boost({ card, value: 6 })
           card.hasFrostHazardBoosted = true
         }
       })

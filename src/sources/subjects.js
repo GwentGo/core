@@ -27,17 +27,22 @@ export const timerObservable = Observable.interval(300)
 export const subscribeActionSubject = () => {
   actionSubject.subscribe(action => {
     const { out, into, card } = action
+    const sourceCard = cards[card.key]
 
-    if (cards[card.key]) {
-      const outFunction = cards[card.key][`${out.type}Out`]
+    if (sourceCard) {
+      const outFunction = sourceCard[`${out.type}Out`]
       outFunction && outFunction(action)
 
-      let intoFunction = null
       if (into) {
+        let intoFunction = null
         if (['fighter', 'archer', 'thrower'].indexOf(into.type) !== -1) {
-          intoFunction = cards[card.key]['tableIn']
+          intoFunction = sourceCard['tableIn']
+
+          if (['hand', 'deck', 'tomb', 'picking'].indexOf(out.type) !== -1) {
+            sourceCard['deploy'] && sourceCard['deploy'](action)
+          }
         } else {
-          intoFunction = cards[card.key][`${into.type}In`]
+          intoFunction = sourceCard[`${into.type}In`]
         }
         intoFunction && intoFunction(action)
       }

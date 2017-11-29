@@ -29,6 +29,7 @@ selecting: {
     card,
     players: [],
     holders: ['hand', 'fighter', 'archer', 'thrower'],
+    selectableCards: [],
     numbers: xxx,
   }
 }

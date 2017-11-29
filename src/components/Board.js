@@ -241,6 +241,10 @@ class Board extends Component {
     })
   }
 
+  isSelectable = ({ card, selectableCards }) => {
+    return selectableCards.find(c => c.id === card.id)
+  }
+
   render() {
     const { players, cards, selecting, classes } = this.props
     const { replacing, currentPlayer, specificCards } = this.state
@@ -385,7 +389,7 @@ class Board extends Component {
                             <Grid container className={classes.gridList}>
                             {holderCards.map(card => {
                               let onSelect = null
-                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && selecting.specific.card.id !== card.id) {
+                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
                                 if (specificCards.length + 1 === selecting.specific.numbers) {
                                   onSelect = () => {
                                     specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })

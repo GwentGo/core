@@ -20,7 +20,9 @@ class CardComponent extends Component {
     return (
       <Card>
         <CardContent>
-          <Typography gutterBottom>{calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened})</Typography>
+          <Typography gutterBottom>
+            {calculatePoints({ card })} ({card.power}+{card.boosted}+{card.strengthened}) {card.isSpy && (' Spy')}
+          </Typography>
           <img className={classes.media} src={`/images/cards/${card.key}.png`} alt="" title={card.abilities} />
           <Typography>{card.name}</Typography>
         </CardContent>

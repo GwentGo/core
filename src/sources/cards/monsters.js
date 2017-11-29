@@ -7,7 +7,7 @@ import { act, getHolder, getCurrentPlayer, getCards, boost } from '../../utils'
 import * as holders from '../../sources/holders'
 
 export const eredin = {
-  tableIn: ({ out, into }) => {
+  deploy: ({ out, into }) => {
     const associationCards = originalCards.filter(card => card.key.indexOf('wild_hunt') !== -1 && card.type === 'Bronze').map(card => ({
       id: uuid(),
       pickingIndex: into.index,
@@ -20,7 +20,7 @@ export const eredin = {
 }
 
 export const wild_hunt_hound = {
-  tableIn: ({ out }) => {
+  deploy: ({ out }) => {
     const deckCards = getCards({ type: 'deck', index: out.index })
     const handCards = getCards({ type: 'hand', index: out.index })
 

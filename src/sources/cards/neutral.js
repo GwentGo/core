@@ -40,11 +40,9 @@ export const muzzle = {
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = { ...specificCards[0], isSpy: true }
+    const index = getIndex({ card: selectedCard })
+    const type = findHolderType({ card: selectedCard })
 
-    store.dispatch(actions.selectingTo({
-      player: getNextPlayer({ index: getIndex({ card }) }),
-      holders: ['fighter', 'archer', 'thrower'],
-      curriedAction: into => ({ out: { index: getIndex({ card: selectedCard }), type: findHolderType({ card: selectedCard }) }, into, card: selectedCard }),
-    }))
+    act({ out: getHolder({ type, index }), into: getHolder({ type, index: getNextPlayer({ index }).index }), card: selectedCard })
   }
 }

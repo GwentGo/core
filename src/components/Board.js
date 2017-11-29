@@ -370,11 +370,12 @@ class Board extends Component {
 
                   {[fighter, archer, thrower].map(holder => {
                     const holderCards = cards.filter(card => card[`${holder.type}Index`] === holder.index)
+                    const mapping = { 'fighter': 'Melee', 'archer': 'Ranged', 'thrower': 'Siege' }
 
                     return (
                       <div tag={`${holder.type}-cards`} key={holder.type}>
                         <Typography type="subheading" paragraph>
-                          {holder.type}({holderCards.length}):
+                          {mapping[holder.type]}({holderCards.length}):
                           {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, holder) && (
                             <Button color="accent" onClick={() => this.toSelected(holder)}>select</Button>
                           )}
@@ -420,7 +421,7 @@ class Board extends Component {
 
               <div tag="tomb-cards">
                 <Typography type="subheading" paragraph>
-                  Tomb({tombCards.length}):
+                  Graveyard({tombCards.length}):
                 </Typography>
                 {tombCards.length > 0 && (
                   <Grid>

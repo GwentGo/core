@@ -27,7 +27,7 @@ export const toggleTurn = ({ currentPlayer }) => {
 export const act = action => {
   const {out, into, card} = action
 
-  const modifiedCard = {...card, [`${out.type}Index`]: '', [`${into.type}Index`]: into.index }
+  const modifiedCard = Object.assign({}, card, { [`${out.type}Index`]: '' }, into ? { [`${into.type}Index`]: into.index } : {})
   store.dispatch(actions.updateCard(modifiedCard))
   actionSubject.next({ out, into, card: modifiedCard })
 }

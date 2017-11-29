@@ -12,7 +12,7 @@ import amber from 'material-ui/colors/amber'
 import Card from './Card'
 import * as actions from '../actions'
 import * as holders from '../sources/holders'
-import { subscribeActionSubject, turnSubject, subscribeWeatherSubject, roundSubject, subscribeTurnSubject, specificSubject, subscribeSpecificSubject } from '../sources/subjects'
+import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
 import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn } from '../utils'
 
@@ -30,6 +30,8 @@ const styles = {
 }
 
 class Board extends Component {
+  subscription = null
+
   state = {
     currentPlayer: null,
     replacing: {
@@ -229,6 +231,16 @@ class Board extends Component {
     getNextPlayer({ index: player.index }).hasPassed ? roundSubject.next({ sequence: this.state.round.sequence + 1 }) : toggleTurn({ currentPlayer: player })
   }
 
+  subscribeTimerObservable = () => {
+    this.subscription = timerObservable.subscribe(() => {
+      if (!(this.props.selecting.from || this.props.selecting.to || this.props.selecting.specific)) {
+        this.subscription.unsubscribe()
+        this.subscription = null
+        toggleTurn({ currentPlayer: this.state.currentPlayer })
+      }
+    })
+  }
+
   render() {
     const { players, cards, selecting, classes } = this.props
     const { replacing, currentPlayer, specificCards } = this.state
@@ -319,7 +331,7 @@ class Board extends Component {
                     if (this.isPlayerMatchWithCurrentPlayer(player)) {
                       if (replacing.hasDone) {
                         if (selecting.from && this.isHolderMatch(selecting.from.holders, hand)) {
-                          onSelect = () => this.fromSelected(hand, card)
+                          onSelect = () => { !this.subscription && this.subscribeTimerObservable(); this.fromSelected(hand, card) }
                         }
                       } else if (card.type !== 'Leader') {
                         if (replacing.remain - 1 > 0) {
@@ -418,7 +430,7 @@ class Board extends Component {
                   </Grid>
                 )}
               </div>
-              
+
               <br/>
 
               {pickingCards.length > 0 && (

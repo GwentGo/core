@@ -1,4 +1,6 @@
 import { Subject } from 'rxjs/Subject'
+import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/observable/interval'
 
 import * as cards from './cards'
 import { store } from '../sources/store'
@@ -20,6 +22,8 @@ export const roundSubject = new Subject()
 // specific = { card, specificCards }
 export const specificSubject = new Subject()
 
+export const timerObservable = Observable.interval(300)
+
 export const subscribeActionSubject = () => {
   actionSubject.subscribe(action => {
     const { out, into, card } = action
@@ -29,12 +33,14 @@ export const subscribeActionSubject = () => {
       outFunction && outFunction(action)
 
       let intoFunction = null
-      if (['fighter', 'archer', 'thrower'].indexOf(into.type) !== -1) {
-        intoFunction = cards[card.key]['tableIn']
-      } else {
-        intoFunction = cards[card.key][`${into.type}In`]
+      if (into) {
+        if (['fighter', 'archer', 'thrower'].indexOf(into.type) !== -1) {
+          intoFunction = cards[card.key]['tableIn']
+        } else {
+          intoFunction = cards[card.key][`${into.type}In`]
+        }
+        intoFunction && intoFunction(action)
       }
-      intoFunction && intoFunction(action)
     }
   })
 

@@ -50,7 +50,7 @@ export const crone__brewess = {
   deploy: ({ out, into }) => {
     const deckCards = getCards({ type: 'deck', index: out.index })
     const handCards = getCards({ type: 'hand', index: out.index })
-    const crones = deckCards.concat(handCards).reduce((acc, card) => (card.key.indexOf('crone') !== -1 ? acc.concat(card) : acc), [])
+    const crones = deckCards.concat(handCards).filter(card => card.key.indexOf('crone') !== -1)
     crones.forEach(card => act({ out: getHolder({ type: findHolderType({ card }), index: out.index }), into, card }))
   }
 }

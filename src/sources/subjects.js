@@ -5,7 +5,7 @@ import 'rxjs/add/observable/interval'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage, boost } from '../utils'
+import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage, boost, getNextPlayer } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -78,8 +78,12 @@ export const subscribeTurnSubject = () => {
       if (holder.weather && holder.weather.card.key === 'frost_hazard') {
         const cards = getCards({ type: holderType, index: player.index })
         if (cards.length > 0) {
+          const nextPlayer = getNextPlayer({ index: holder.index })
+          const oppositeCards = getCards({ type: holderType, index: nextPlayer.index })
+          const wild_hunt_rider = oppositeCards.filter(card => card.key === 'wild_hunt_rider')
+
           const lowestPointsCard = cards.reduce((acc, card) => (calculatePoints({ card }) < calculatePoints({ card: acc }) ? card : acc), cards[0])
-          demage({ card: lowestPointsCard, value: 2 })
+          demage({ card: lowestPointsCard, value: 2 + wild_hunt_rider.length })
         }
       }
     })

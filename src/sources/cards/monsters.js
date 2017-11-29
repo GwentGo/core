@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../../utils/originalCards'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType } from '../../utils'
 import * as holders from '../../sources/holders'
 
 export const eredin = {
@@ -45,3 +45,14 @@ export const ice_giant = {
     }
   }
 }
+
+export const crone__brewess = {
+  deploy: ({ out, into }) => {
+    const deckCards = getCards({ type: 'deck', index: out.index })
+    const handCards = getCards({ type: 'hand', index: out.index })
+    const crones = deckCards.concat(handCards).reduce((acc, card) => (card.key.indexOf('crone') !== -1 ? acc.concat(card) : acc), [])
+    crones.forEach(card => act({ out: getHolder({ type: findHolderType({ card }), index: out.index }), into, card }))
+  }
+}
+export const crone__weavess = crone__brewess
+export const crone__whispess = crone__brewess

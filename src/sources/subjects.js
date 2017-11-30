@@ -29,6 +29,10 @@ export const subscribeActionSubject = () => {
     const { out, into, card } = action
     const sourceCard = cards[card.key]
 
+    if (out.type === 'picking') {
+      store.dispatch(actions.removeCards(getCards({ type: 'picking', index: out.index })))
+    }
+
     if (sourceCard) {
       const outFunction = sourceCard[`${out.type}Out`]
       outFunction && outFunction(action)

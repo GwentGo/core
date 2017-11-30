@@ -60,8 +60,10 @@ class Board extends Component {
       turn.player.hasPassed ? toggleTurn({ currentPlayer: turn.player }) : this.setupTurn(turn)
     })
     roundSubject.subscribe(round => {
-      this.clearTable()
-      this.setState({ round }, () => { this.prepareRound(round) })
+      this.setState({ round }, () => { 
+        this.prepareRound(round)
+        this.clearTable()
+      })
     })
   }
 

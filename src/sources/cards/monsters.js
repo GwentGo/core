@@ -26,10 +26,6 @@ export const wild_hunt_hound = {
     if (biting_frost) {
       act({ out: getHolder({ type: 'deck', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
     }
-  },
-  pickingOut: ({ out }) => {
-    const pickingCards = getCards({ type: 'picking', index: out.index })
-    store.dispatch(actions.removeCards(pickingCards))
   }
 }
 
@@ -48,10 +44,6 @@ export const wild_hunt_warrior = {
     if (calculate({ card: selectedCard }) <= 0 || (holder.weather && holder.weather.card.key === 'frost_hazard')) {
       boost({ card, value: 2 })
     }
-  },
-  pickingOut: ({ out }) => {
-    const pickingCards = getCards({ type: 'picking', index: out.index })
-    store.dispatch(actions.removeCards(pickingCards))
   }
 }
 
@@ -73,17 +65,6 @@ export const wild_hunt_navigator = {
         curriedAction: into => ({ out: getHolder({ type: 'deck', index }), into, card: upcomingCard }),
       }))
     }
-  },
-  pickingOut: ({ out }) => {
-    const pickingCards = getCards({ type: 'picking', index: out.index })
-    store.dispatch(actions.removeCards(pickingCards))
-  }
-}
-
-export const wild_hunt_rider = {
-  pickingOut: ({ out }) => {
-    const pickingCards = getCards({ type: 'picking', index: out.index })
-    store.dispatch(actions.removeCards(pickingCards))
   }
 }
 

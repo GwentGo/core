@@ -32,10 +32,6 @@ export const act = action => {
   actionSubject.next({ out, into, card: modifiedCard })
 }
 
-export const getHolder = ({ type, index }) => {
-  return holders[`${type}s`].find(holder => holder.index === index)
-}
-
 export const getCards = ({ type, index }) => {
   return store.getState().cards.filter(card => card[`${type}Index`] === index)
 }
@@ -60,8 +56,21 @@ export const calculate = ({ card }) => {
   return card.power + card.boosted + card.strengthened
 }
 
+export const getHolder = ({ type, index }) => {
+  return holders[`${type}s`].find(holder => holder.index === index)
+}
+
+export const getHolderTypes = ({ card }) => {
+  const mapping = { 'Melee': 'fighter', 'Ranged': 'archer', 'Siege': 'thrower' }
+  return card.row === 'Any' ? ['fighter', 'archer', 'thrower'] : [mapping[card.row]]
+}
+
 export const findHolderType = ({ card }) => {
   return ['deck', 'hand', 'fighter', 'archer', 'thrower', 'table'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
+}
+
+export const isHolderMatch = ({ holder, holderTypes }) => {
+  return holderTypes.indexOf(holder.type) !== -1
 }
 
 export const demage = ({ card, value }) => {

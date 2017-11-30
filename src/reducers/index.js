@@ -18,17 +18,17 @@ cards = [{
 selecting: {
   from: {
     player,
-    holders: ['hand', 'fighter'],
+    holderTypes: ['hand', 'fighter'],
   },
   to: {
     player,
-    holders: ['fighter', 'archer', 'thrower'],
+    holderTypes: ['fighter', 'archer', 'thrower'],
     curriedAction: 'function that returns the action object',
   },
   specific: {
     card,
     players: [],
-    holders: ['hand', 'fighter', 'archer', 'thrower'],
+    holderTypes: ['hand', 'fighter', 'archer', 'thrower'],
     selectableCards: [],
     numbers: xxx,
   }

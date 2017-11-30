@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../../utils/originalCards'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards } from '../../utils'
 import * as holders from '../../sources/holders'
 
 export const eredin = {
@@ -15,7 +15,7 @@ export const eredin = {
     }))
     store.dispatch(actions.addCards(associationCards))
 
-    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holders: ['picking'] }))
+    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['picking'] }))
   }
 }
 
@@ -58,7 +58,7 @@ export const wild_hunt_warrior = {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players })
     const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -67,6 +67,27 @@ export const wild_hunt_warrior = {
     const holder = getHolder({ type: findHolderType({ card: selectedCard }), index: getIndex({ card: selectedCard }) })
     if (calculate({ card: selectedCard }) <= 0 || (holder.weather && holder.weather.card.key === 'frost_hazard')) {
       boost({ card, value: 2 })
+    }
+  }
+}
+
+export const wild_hunt_navigator = {
+  deploy: ({ out, card }) => {
+    const players = [getCurrentPlayer({ index: out.index })]
+    const selectableCards = getTableCards({ index: out.index }).filter(c => c.key.indexOf('wild_hunt') !== -1 && c.type === 'Bronze' && c.id !== card.id )
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card })
+    const upcomingCard = getCards({ type: 'deck', index }).find(c => c.key === selectedCard.key)
+    if (upcomingCard) {
+      store.dispatch(actions.selectingTo({
+        player: getCurrentPlayer({ index }),
+        holderTypes: getHolderTypes({ card: upcomingCard }),
+        curriedAction: into => ({ out: getHolder({ type: 'deck', index }), into, card: upcomingCard }),
+      }))
     }
   }
 }

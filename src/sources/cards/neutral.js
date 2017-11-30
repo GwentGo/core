@@ -7,7 +7,7 @@ export const biting_frost = {
   tableIn: ({ out, into, card }) => {
     store.dispatch(actions.selectingTo({
       player: getNextPlayer({ index: out.index }),
-      holders: ['fighter', 'archer', 'thrower'],
+      holderTypes: ['fighter', 'archer', 'thrower'],
       curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivatives.getDerivativeCard({ key: 'frost_hazard' }) }),
     }))
 
@@ -20,7 +20,7 @@ export const swallow_potion = {
     const players = [getCurrentPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players })
     const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
 
     act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   },
@@ -34,7 +34,7 @@ export const muzzle = {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
 
     act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   },

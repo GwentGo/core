@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch } from '../utils'
 
 const styles = {
   root: {
@@ -146,13 +146,13 @@ class Board extends Component {
 
   setupTurn = turn => {
     this.setState({ currentPlayer: turn.player }, () => {
-      this.props.selectingFrom({ player: turn.player, holders: ['hand'] })
+      this.props.selectingFrom({ player: turn.player, holderTypes: ['hand'] })
     })
   }
 
   replacing = () => {
     const player = this.props.players.find(player => player.index === this.state.replacing.currentIndex)
-    this.props.selectingFrom({ player, holders: ['hand'] })
+    this.props.selectingFrom({ player, holderTypes: ['hand'] })
   }
 
   replaceCard = card => {
@@ -162,16 +162,6 @@ class Board extends Component {
     const deckCards = this.props.cards.filter(card => card.deckIndex === replacing.currentIndex)
     const randomCard = getRandomCards(deckCards, { numbers: 1 })[0]
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
-  }
-
-  getHoldersFromCard = card => {
-    const mapping = {
-      'Melee': 'fighter',
-      'Ranged': 'archer',
-      'Siege': 'thrower',
-    }
-
-    return card.row === 'Any' ? ['fighter', 'archer', 'thrower'] : [mapping[card.row]]
   }
 
   isPlayerMatchWithCurrentPlayer = player => {
@@ -203,10 +193,6 @@ class Board extends Component {
     return this.props.selecting.specific.players.find(p => p.index === player.index)
   }
 
-  isHolderMatch = (holders, holder) => {
-    return holders.indexOf(holder.type) !== -1
-  }
-
   fromSelected = (holder, card) => {
     this.props.selectingFrom(null)
 
@@ -216,7 +202,7 @@ class Board extends Component {
       const table = getHolder({ type: 'table', index: holder.index })
       act({ out: holder, into: table, card })
     } else {
-      this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holders: this.getHoldersFromCard(card), curriedAction: into => ({ out: holder, into, card }) })
+      this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holderTypes: getHolderTypes({ card }), curriedAction: into => ({ out: holder, into, card }) })
     }
   }
 
@@ -333,7 +319,7 @@ class Board extends Component {
                     let onSelect = null
                     if (this.isPlayerMatchWithCurrentPlayer(player)) {
                       if (replacing.hasDone) {
-                        if (selecting.from && this.isHolderMatch(selecting.from.holders, hand)) {
+                        if (selecting.from && isHolderMatch({ holder: hand, holderTypes: selecting.from.holderTypes })) {
                           onSelect = () => { !this.subscription && this.subscribeTimerObservable(); this.fromSelected(hand, card) }
                         }
                       } else if (card.type !== 'Leader') {
@@ -375,7 +361,7 @@ class Board extends Component {
                       <div tag={`${holder.type}-cards`} key={holder.type}>
                         <Typography type="subheading" paragraph>
                           {mapping[holder.type]}({holderCards.length}):
-                          {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && this.isHolderMatch(selecting.to.holders, holder) && (
+                          {selecting.to && this.canHoldWithPlayerAndCard(player, selecting.to.curriedAction().card) && isHolderMatch({ holder, holderTypes: selecting.to.holderTypes }) && (
                             <Button color="accent" onClick={() => this.toSelected(holder)}>select</Button>
                           )}
                         </Typography>
@@ -447,7 +433,7 @@ class Board extends Component {
                     {pickingCards.map(card => {
                       let onSelect = null
                       if (this.isPlayerMatchWithCurrentPlayer(player)) {
-                        if (selecting.from && this.isHolderMatch(selecting.from.holders, picking)) {
+                        if (selecting.from && isHolderMatch({ holder: picking, holderTypes: selecting.from.holderTypes })) {
                           onSelect = () => this.fromSelected(picking, card)
                         }
                       }

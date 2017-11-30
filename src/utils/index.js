@@ -24,9 +24,7 @@ export const toggleTurn = ({ currentPlayer }) => {
   turnSubject.next({ player: nextPlayer })
 }
 
-export const act = action => {
-  const {out, into, card} = action
-
+export const act = ({out, into, card}) => {
   const modifiedCard = Object.assign({}, card, { [`${out.type}Index`]: '' }, into ? { [`${into.type}Index`]: into.index } : {})
   store.dispatch(actions.updateCard(modifiedCard))
   actionSubject.next({ out, into, card: modifiedCard })
@@ -78,7 +76,7 @@ export const demage = ({ card, value }) => {
 
   if (calculate({ card }) <= 0) {
     const holderType = findHolderType({ card })
-    store.dispatch(actions.updateCard({...card, [`${holderType}Index`]: '', 'tombIndex': card[`${holderType}Index`] }))
+    store.dispatch(actions.updateCard(Object.assign({}, card, { [`${holderType}Index`]: '' }, card.isDoomed ? {} : { 'tombIndex': card[`${holderType}Index`] } )))
   }
 }
 

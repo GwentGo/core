@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType } from '../utils'
 
 const styles = {
   root: {
@@ -77,7 +77,7 @@ class Board extends Component {
     getPlayers().forEach(player => {
       const tableCards = getTableCards({ index: player.index })
       tableCards.forEach(card => {
-        this.props.updateCard({ ...card, fighterIndex: '', archerIndex: '', throwerIndex: '', tombIndex: player.index })
+        act({ out: getHolder({ type: findHolderType({ card }), index: player.index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index: player.index }), card })
       })
     })
 

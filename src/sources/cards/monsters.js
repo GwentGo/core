@@ -22,12 +22,9 @@ export const eredin = {
 export const wild_hunt_hound = {
   deploy: ({ out }) => {
     const deckCards = getCards({ type: 'deck', index: out.index })
-    const handCards = getCards({ type: 'hand', index: out.index })
-
-    const foundFromDeck = deckCards.find(card => card.key === 'biting_frost')
-    const biting_frost = foundFromDeck ? foundFromDeck : handCards.find(card => card.key === 'biting_frost')
+    const biting_frost = deckCards.find(card => card.key === 'biting_frost')
     if (biting_frost) {
-      act({ out: getHolder({ type: foundFromDeck ? 'deck' : 'hand', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
+      act({ out: getHolder({ type: 'deck', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
     }
   },
   pickingOut: ({ out }) => {
@@ -49,8 +46,7 @@ export const ice_giant = {
 export const crone__brewess = {
   deploy: ({ out, into }) => {
     const deckCards = getCards({ type: 'deck', index: out.index })
-    const handCards = getCards({ type: 'hand', index: out.index })
-    const crones = deckCards.concat(handCards).filter(card => card.key.indexOf('crone') !== -1)
+    const crones = deckCards.filter(card => card.key.indexOf('crone') !== -1)
     crones.forEach(card => act({ out: getHolder({ type: findHolderType({ card }), index: out.index }), into, card }))
   }
 }

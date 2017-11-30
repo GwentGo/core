@@ -69,7 +69,6 @@ class Board extends Component {
     const { selecting } = this.props
 
     if (selecting.specific && selecting.specific.numbers === 0) {
-      specificSubject.next({ card: selecting.specific.card, specificCards: [] })
       this.props.selectingSpecific(null)
     }
   }

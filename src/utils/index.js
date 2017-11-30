@@ -52,11 +52,11 @@ export const getPlayers = () => {
   return store.getState().players
 }
 
-export const calculate = ({ cards }) => {
-  return cards.reduce((acc, card) => (acc + calculatePoints({ card })), 0)
+export const calculatePower = ({ cards }) => {
+  return cards.reduce((acc, card) => (acc + calculate({ card })), 0)
 }
 
-export const calculatePoints = ({ card }) => {
+export const calculate = ({ card }) => {
   return card.power + card.boosted + card.strengthened
 }
 
@@ -67,7 +67,7 @@ export const findHolderType = ({ card }) => {
 export const demage = ({ card, value }) => {
   card.boosted -= value
 
-  if (calculatePoints({ card }) <= 0) {
+  if (calculate({ card }) <= 0) {
     const holderType = findHolderType({ card })
     store.dispatch(actions.updateCard({...card, [`${holderType}Index`]: '', 'tombIndex': card[`${holderType}Index`] }))
   }

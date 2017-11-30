@@ -5,7 +5,7 @@ import 'rxjs/add/observable/interval'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculate, getPlayers, getTableCards, calculatePoints, getHolder, getCards, demage, boost, getNextPlayer } from '../utils'
+import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -51,7 +51,7 @@ export const subscribeActionSubject = () => {
 
   actionSubject.subscribe(() => {
     getPlayers().forEach(player => {
-      store.dispatch(actions.updatePlayer({ ...player, power: calculate({ cards: getTableCards({ index: player.index }) }) }))
+      store.dispatch(actions.updatePlayer({ ...player, power: calculatePower({ cards: getTableCards({ index: player.index }) }) }))
     })
   })
 }
@@ -82,7 +82,7 @@ export const subscribeTurnSubject = () => {
           const oppositeCards = getCards({ type: holderType, index: nextPlayer.index })
           const wild_hunt_rider = oppositeCards.filter(card => card.key === 'wild_hunt_rider')
 
-          const lowestPointsCard = cards.reduce((acc, card) => (calculatePoints({ card }) < calculatePoints({ card: acc }) ? card : acc), cards[0])
+          const lowestPointsCard = cards.reduce((acc, card) => (calculate({ card }) < calculate({ card: acc }) ? card : acc), cards[0])
           demage({ card: lowestPointsCard, value: 2 + wild_hunt_rider.length })
         }
       }

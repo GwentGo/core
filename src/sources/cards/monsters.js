@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import originalCards from '../../utils/originalCards'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate } from '../../utils'
 import * as holders from '../../sources/holders'
 
 export const eredin = {
@@ -56,3 +56,21 @@ export const crone__brewess = {
 }
 export const crone__weavess = crone__brewess
 export const crone__whispess = crone__brewess
+
+export const wild_hunt_warrior = {
+  deploy: ({ out, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getSelectableCards({ card, players })
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    demage({ card: selectedCard, value: 3 })
+
+    const holder = getHolder({ type: findHolderType({ card: selectedCard }), index: getIndex({ card: selectedCard }) })
+    if (calculate({ card: selectedCard }) <= 0 || (holder.weather && holder.weather.card.key === 'frost_hazard')) {
+      boost({ card, value: 2 })
+    }
+  }
+}

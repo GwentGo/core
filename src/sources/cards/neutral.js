@@ -1,6 +1,6 @@
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculatePoints } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -32,7 +32,7 @@ export const swallow_potion = {
 export const muzzle = {
   tableIn: ({ out, into, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculatePoints({ card }) <= 8)
+    const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     const numbers = Math.min(selectableCards.length, 1)
     store.dispatch(actions.selectingSpecific({ card, players, holders: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
 

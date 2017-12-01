@@ -60,7 +60,7 @@ class Board extends Component {
       turn.player.hasPassed ? toggleTurn({ currentPlayer: turn.player }) : this.setupTurn(turn)
     })
     roundSubject.subscribe(round => {
-      this.setState({ round }, () => { 
+      this.setState({ round }, () => {
         this.prepareRound(round)
         this.clearTable()
       })
@@ -176,7 +176,7 @@ class Board extends Component {
 
     if (card.loyalty.indexOf('Loyal') !== -1 && card.loyalty.indexOf('Disloyal') !== -1) {
       return true
-    } else if (card.row.indexOf('Special') !== -1 || card.type.indexOf('Leader') !== -1 || card.loyalty.indexOf('Loyal') !== -1) {
+    } else if (this.isBelongTo({ card, type: 'Special' }) || card.type.indexOf('Leader') !== -1 || card.loyalty.indexOf('Loyal') !== -1) {
       return currentPlayer.index === player.index
     } else {
       return currentPlayer.index !== player.index
@@ -188,7 +188,7 @@ class Board extends Component {
   }
 
   canHoldWithPlayerAndCard = (player, card) => {
-    return card.row.indexOf('Special') !== -1 ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
+    return this.isBelongTo({ card, type: 'Special' }) ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
   }
 
   isPlayerMatchWithSelectingPlayers = player => {
@@ -198,19 +198,30 @@ class Board extends Component {
   fromSelected = (holder, card) => {
     this.props.selectingFrom(null)
 
-    if (card.row.indexOf('Special') !== -1) {
+    if (this.isBelongTo({ card, type: 'Special' })) {
       this.props.selectingTo(null)
 
       const table = getHolder({ type: 'table', index: holder.index })
       act({ out: holder, into: table, card })
+
+      if (this.isBelongTo({ card, type: 'derivative' })) {
+        act({ out: table, into: null, card })
+      } else {
+        act({ out: table, into: getHolder({ type: 'tomb', index: holder.index }), card })
+      }
     } else {
       this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holderTypes: getHolderTypes({ card }), curriedAction: into => ({ out: holder, into, card }) })
     }
   }
 
   toSelected = holder => {
+    const { selecting: { to } } = this.props
+    const action = to.curriedAction(holder)
+
     this.props.selectingTo(null)
-    act(this.props.selecting.to.curriedAction(holder))
+
+    act(action)
+    to.onSelected && to.onSelected(action)
   }
 
   pass = player => {
@@ -230,6 +241,10 @@ class Board extends Component {
 
   isSelectable = ({ card, selectableCards }) => {
     return selectableCards.find(c => c.id === card.id)
+  }
+
+  isBelongTo = ({ card, type }) => {
+    return card.attributes && card.attributes.indexOf(type) !== -1
   }
 
   render() {

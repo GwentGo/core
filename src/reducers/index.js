@@ -24,6 +24,7 @@ selecting: {
     player,
     holderTypes: ['fighter', 'archer', 'thrower'],
     curriedAction: 'function that returns the action object',
+    onSelected: 'optional: function called after to selected',
   },
   specific: {
     card,

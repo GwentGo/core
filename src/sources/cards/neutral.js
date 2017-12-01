@@ -8,10 +8,8 @@ export const biting_frost = {
     store.dispatch(actions.selectingTo({
       player: getNextPlayer({ index: out.index }),
       holderTypes: ['fighter', 'archer', 'thrower'],
-      curriedAction: into => ({ out: { index: out.index, type: 'derivation' }, into, card: derivatives.getDerivativeCard({ key: 'frost_hazard' }) }),
+      curriedAction: into => ({ out: { type: 'derivation', index: out.index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) }),
     }))
-
-    act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   }
 }
 
@@ -21,8 +19,6 @@ export const swallow_potion = {
     const selectableCards = getSelectableCards({ card, players })
     const numbers = Math.min(selectableCards.length, 1)
     store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
-
-    act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   },
   specific: ({ specificCards }) => {
     specificCards.forEach(card => boost({ card, value: 8 }))
@@ -35,8 +31,6 @@ export const muzzle = {
     const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     const numbers = Math.min(selectableCards.length, 1)
     store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
-
-    act({ out: into, into: getHolder({ type: 'tomb', index: out.index }), card })
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = { ...specificCards[0], isSpy: true }
@@ -44,5 +38,18 @@ export const muzzle = {
     const type = findHolderType({ card: selectedCard })
 
     act({ out: getHolder({ type, index }), into: getHolder({ type, index: getNextPlayer({ index }).index }), card: selectedCard })
+  }
+}
+
+export const white_frost = {
+  tableIn: ({ out, into, card }) => {
+    store.dispatch(actions.selectingTo({
+      player: getNextPlayer({ index: out.index }),
+      holderTypes: ['fighter', 'archer'],
+      curriedAction: into => ({ out: { type: 'derivation', index: out.index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) }),
+      onSelected: ({ out, into }) => {
+        act({ out: { type: 'derivation', index: out.index }, into: getHolder({ type: into.type === 'fighter' ? 'archer' : 'thrower', index: into.index }), card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
+      },
+    }))
   }
 }

@@ -46,6 +46,10 @@ export const subscribeActionSubject = () => {
             sourceCard['deploy'] && sourceCard['deploy'](action)
           }
         } else {
+          if (into.type === 'tomb' && ['fighter', 'archer', 'thrower'].indexOf(out.type) !== -1) {
+            sourceCard['destroyed'] && sourceCard['destroyed'](action)
+          }
+
           intoFunction = sourceCard[`${into.type}In`]
         }
         intoFunction && intoFunction(action)

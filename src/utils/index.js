@@ -75,8 +75,8 @@ export const demage = ({ card, value }) => {
   card.boosted -= value
 
   if (calculate({ card }) <= 0) {
-    const holderType = findHolderType({ card })
-    store.dispatch(actions.updateCard(Object.assign({}, card, { [`${holderType}Index`]: '' }, card.isDoomed ? {} : { 'tombIndex': card[`${holderType}Index`] } )))
+    const index = getIndex({ card })
+    act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card })
   }
 }
 
@@ -90,4 +90,8 @@ export const getIndex = ({ card }) => {
 
 export const getSelectableCards = ({ card, players }) => {
   return players.reduce((acc, player) => (acc.concat(getTableCards({ index: player.index }))), []).filter(c => c.id !== card.id)
+}
+
+export const isAlly = ({ card1, card2 }) => {
+  return getIndex({ card: card1 }) === getIndex({ card: card2 })
 }

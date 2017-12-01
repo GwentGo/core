@@ -3,12 +3,17 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly } from '../../utils'
 import * as holders from '../../sources/holders'
+import { actionSubject } from '../subjects'
+
+const isWildHunt = ({ card }) => {
+  return card.attributes && card.attributes.indexOf('Wild Hunt') !== -1
+}
 
 export const eredin = {
   deploy: ({ out, into }) => {
-    const associationCards = origins.filter(card => card.key.indexOf('wild_hunt') !== -1 && card.type === 'Bronze').map(card => ({
+    const associationCards = origins.filter(card => isWildHunt({ card }) && card.type === 'Bronze').map(card => ({
       id: uuid(),
       pickingIndex: into.index,
       ...card,
@@ -50,7 +55,7 @@ export const wild_hunt_warrior = {
 export const wild_hunt_navigator = {
   deploy: ({ out, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
-    const selectableCards = getTableCards({ index: out.index }).filter(c => c.key.indexOf('wild_hunt') !== -1 && c.type === 'Bronze' && c.id !== card.id )
+    const selectableCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.type === 'Bronze' && c.id !== card.id )
     const numbers = Math.min(selectableCards.length, 1)
     store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
   },
@@ -65,6 +70,28 @@ export const wild_hunt_navigator = {
         curriedAction: into => ({ out: getHolder({ type: 'deck', index }), into, card: upcomingCard }),
       }))
     }
+  }
+}
+
+// TODO: Test with Muzzle
+export const wild_hunt_longship = {
+  subscription: {},
+
+  tableIn: ({ out, card }) => {
+    const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+    fulfilledCards.forEach(card => boost({ card, value: 1 }))
+
+    wild_hunt_longship.subscription[card.id] = actionSubject.subscribe(action => {
+      if (isAlly({ card1: card, card2: action.card }) && isWildHunt({ card: action.card })) {
+        boost({ card: action.card, value: 1 })
+      }
+    })
+  },
+  destroyed: ({ out, card }) => {
+    const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+    fulfilledCards.forEach(card => demage({ card, value: 1 }))
+
+    wild_hunt_longship.subscription[card.id].unsubscribe()
   }
 }
 

@@ -95,3 +95,11 @@ export const getSelectableCards = ({ card, players }) => {
 export const isAlly = ({ card1, card2 }) => {
   return getIndex({ card: card1 }) === getIndex({ card: card2 })
 }
+
+export const isEnemy = ({ card1, card2 }) => {
+  return getIndex({ card: card1 }) !== getIndex({ card: card2 })
+}
+
+export const get = ({ card }) => {
+  return store.getState().cards.find(c => c.id === card.id)
+}

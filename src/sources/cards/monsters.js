@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
 
@@ -83,8 +83,8 @@ export const wild_hunt_longship = {
 
       wild_hunt_longship.subscription[card.id] = actionSubject.subscribe(action => {
         if (isWildHunt({ card: action.card })) {
-          const origin = store.getState().cards.find(c => c.id === card.id)
-          if (isAlly({ card1: origin, card2: action.card }) && action.card.id !== origin.id) {
+          const updatedCard = get({ card })
+          if (isAlly({ card1: updatedCard, card2: action.card }) && action.card.id !== updatedCard.id) {
             boost({ card: action.card, value: 1 })
           }
         }
@@ -120,3 +120,25 @@ export const crone__brewess = {
 }
 export const crone__weavess = crone__brewess
 export const crone__whispess = crone__brewess
+
+export const drowner = {
+  deploy: ({ card }) => {
+    const players = getPlayers()
+    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card: selectedCard })
+    const outHolder = getHolder({ type: findHolderType({ card: selectedCard }), index })
+    const intoHolder = getHolder({ type: findHolderType({ card }), index })
+
+    act({ out: outHolder, into: intoHolder, card: selectedCard })
+
+    const updatedCard = get({ card: selectedCard })
+    if (isEnemy({ card1: card, card2: updatedCard })) {
+      demage({ card: updatedCard, value: intoHolder.weather && intoHolder.weather.card ? 4 : 2 })
+    }
+  }
+}

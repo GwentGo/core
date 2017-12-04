@@ -1,7 +1,10 @@
 export const specials = {
   eredin: {
     isDoomed: true,
-  }
+  },
+  frightener: {
+    isDoomed: true,
+  },
 }
 
 export const common = card => ({

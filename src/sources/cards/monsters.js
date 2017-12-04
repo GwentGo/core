@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
 
@@ -146,7 +146,7 @@ export const slyzard = {
     const players = [getCurrentPlayer({ index: out.index })]
     const holder1 = getHolder({ type: 'tomb', index: out.index })
     const holder2 = getHolder({ type: 'deck', index: out.index })
-    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => isFoundInBothHolder({ card, holder1, holder2 }))
+    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
     const numbers = Math.min(selectableCards.length, 1)
     store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['tomb'], selectableCards, numbers }))
   },
@@ -162,5 +162,26 @@ export const slyzard = {
       holderTypes: getHolderTypes({ card: thatCopy }),
       curriedAction: into => ({ out, into, card: thatCopy }),
     }))
+  }
+}
+
+export const frightener = {
+  deploy: ({ into, card }) => {
+    const players = [getCurrentPlayer({ index: into.index })]
+    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card: selectedCard })
+    const outHolder = getHolder({ type: findHolderType({ card: selectedCard }), index })
+    const intoHolder = getHolder({ type: findHolderType({ card }), index })
+    act({ out: outHolder, into: intoHolder, card: selectedCard })
+
+    const player = getNextPlayer({ index })
+    const deck = getHolder({ type: 'deck', index: player.index })
+    const topCard = getCards(deck)[0]
+    act({ out: deck, into: getHolder({ type: 'hand', index: player.index }), card: topCard })
   }
 }

@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get } from '../utils'
 
 const styles = {
   root: {
@@ -176,7 +176,7 @@ class Board extends Component {
 
     if (card.loyalty.indexOf('Loyal') !== -1 && card.loyalty.indexOf('Disloyal') !== -1) {
       return true
-    } else if (this.isBelongTo({ card, type: 'Special' }) || card.type.indexOf('Leader') !== -1 || card.loyalty.indexOf('Loyal') !== -1) {
+    } else if (isBelongTo({ card, type: 'Special' }) || card.type.indexOf('Leader') !== -1 || card.loyalty.indexOf('Loyal') !== -1) {
       return currentPlayer.index === player.index
     } else {
       return currentPlayer.index !== player.index
@@ -188,7 +188,7 @@ class Board extends Component {
   }
 
   canHoldWithPlayerAndCard = (player, card) => {
-    return this.isBelongTo({ card, type: 'Special' }) ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
+    return isBelongTo({ card, type: 'Special' }) ? this.isPlayerMatchWithSelectingPlayer(player) : this.isPlayerMatchWithCard(player, card)
   }
 
   isPlayerMatchWithSelectingPlayers = player => {
@@ -198,16 +198,17 @@ class Board extends Component {
   fromSelected = (holder, card) => {
     this.props.selectingFrom(null)
 
-    if (this.isBelongTo({ card, type: 'Special' })) {
+    if (isBelongTo({ card, type: 'Special' })) {
       this.props.selectingTo(null)
 
       const table = getHolder({ type: 'table', index: holder.index })
       act({ out: holder, into: table, card })
 
-      if (this.isBelongTo({ card, type: 'derivative' })) {
-        act({ out: table, into: null, card })
+      const updatedCard = get({ card })
+      if (isBelongTo({ card: updatedCard, type: 'derivative' })) {
+        act({ out: table, into: null, card: updatedCard })
       } else {
-        act({ out: table, into: getHolder({ type: 'tomb', index: holder.index }), card })
+        act({ out: table, into: getHolder({ type: 'tomb', index: holder.index }), card: updatedCard })
       }
     } else {
       this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holderTypes: getHolderTypes({ card }), curriedAction: into => ({ out: holder, into, card }) })
@@ -243,10 +244,6 @@ class Board extends Component {
     return selectableCards.find(c => c.id === card.id)
   }
 
-  isBelongTo = ({ card, type }) => {
-    return card.attributes && card.attributes.indexOf(type) !== -1
-  }
-
   onSelect = ({ player, card }) => {
     const { selecting } = this.props
     const { specificCards } = this.state
@@ -269,7 +266,7 @@ class Board extends Component {
 
   render() {
     const { players, cards, selecting, classes } = this.props
-    const { replacing, currentPlayer, specificCards } = this.state
+    const { replacing, currentPlayer } = this.state
 
     return (
       <div>

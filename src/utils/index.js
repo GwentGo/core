@@ -117,3 +117,7 @@ export const consume = ({ card, target, isBoost = true }) => {
   const out = getHolder({ type: findHolderType({ card: target }), index })
   act({ out, into: out.type === 'tomb' ? null : getHolder({ type: 'tomb', index }), card: target })
 }
+
+export const isBelongTo = ({ card, type }) => {
+  return card.attributes && card.attributes.indexOf(type) !== -1
+}

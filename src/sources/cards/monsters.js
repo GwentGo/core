@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
 
@@ -134,11 +134,33 @@ export const drowner = {
     const outHolder = getHolder({ type: findHolderType({ card: selectedCard }), index })
     const intoHolder = getHolder({ type: findHolderType({ card }), index })
 
-    act({ out: outHolder, into: intoHolder, card: selectedCard })
-
-    const updatedCard = get({ card: selectedCard })
-    if (isEnemy({ card1: card, card2: updatedCard })) {
-      demage({ card: updatedCard, value: intoHolder.weather && intoHolder.weather.card ? 4 : 2 })
+    if (isEnemy({ card1: card, card2: selectedCard })) {
+      demage({ card: selectedCard, value: intoHolder.weather && intoHolder.weather.card ? 4 : 2 })
     }
+    act({ out: outHolder, into: intoHolder, card: selectedCard })
+  }
+}
+
+export const slyzard = {
+  deploy: ({ out, card }) => {
+    const players = [getCurrentPlayer({ index: out.index })]
+    const holder1 = getHolder({ type: 'tomb', index: out.index })
+    const holder2 = getHolder({ type: 'deck', index: out.index })
+    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => isFoundInBothHolder({ card, holder1, holder2 }))
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['tomb'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    consume({ card, target: selectedCard, isBoost: false })
+
+    const index = getIndex({ card })
+    const out = getHolder({ type: 'deck', index })
+    const thatCopy = getCards(out).find(c => c.key === selectedCard.key)
+    store.dispatch(actions.selectingTo({
+      player: getCurrentPlayer({ index }),
+      holderTypes: getHolderTypes({ card: thatCopy }),
+      curriedAction: into => ({ out, into, card: thatCopy }),
+    }))
   }
 }

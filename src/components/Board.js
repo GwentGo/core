@@ -247,6 +247,26 @@ class Board extends Component {
     return card.attributes && card.attributes.indexOf(type) !== -1
   }
 
+  onSelect = ({ player, card }) => {
+    const { selecting } = this.props
+    const { specificCards } = this.state
+
+    let onSelect = null
+    if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
+      if (specificCards.length + 1 === selecting.specific.numbers) {
+        onSelect = () => {
+          specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })
+          this.props.selectingSpecific(null)
+          this.setState({ specificCards: [] })
+        }
+      } else {
+        onSelect = () => this.setState({ specificCards: specificCards.concat(card) })
+      }
+    }
+
+    return onSelect
+  }
+
   render() {
     const { players, cards, selecting, classes } = this.props
     const { replacing, currentPlayer, specificCards } = this.state
@@ -390,25 +410,11 @@ class Board extends Component {
                         {holderCards.length > 0 && (
                           <Grid>
                             <Grid container className={classes.gridList}>
-                            {holderCards.map(card => {
-                              let onSelect = null
-                              if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
-                                if (specificCards.length + 1 === selecting.specific.numbers) {
-                                  onSelect = () => {
-                                    specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })
-                                    this.props.selectingSpecific(null)
-                                    this.setState({ specificCards: [] })
-                                  }
-                                } else {
-                                  onSelect = () => this.setState({ specificCards: specificCards.concat(card) })
-                                }
-                              }
-                              return (
-                                <Grid key={card.id} item>
-                                  <Card card={card} onSelect={onSelect} />
-                                </Grid>
-                              )
-                            })}
+                            {holderCards.map(card => (
+                              <Grid key={card.id} item>
+                                <Card card={card} onSelect={this.onSelect({ player, card })} />
+                              </Grid>
+                            ))}
                             </Grid>
                           </Grid>
                         )}
@@ -430,7 +436,7 @@ class Board extends Component {
                     <Grid container className={classes.gridList}>
                     {tombCards.map(card => (
                       <Grid key={card.id} item>
-                        <Card card={card} />
+                        <Card card={card} onSelect={this.onSelect({ player, card })} />
                       </Grid>
                     ))}
                     </Grid>

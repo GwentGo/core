@@ -24,7 +24,7 @@ export const toggleTurn = ({ currentPlayer }) => {
   turnSubject.next({ player: nextPlayer })
 }
 
-export const act = ({out, into, card}) => {
+export const act = ({ out, into, card }) => {
   const modifiedCard = Object.assign({}, card, { [`${out.type}Index`]: '' }, into ? { [`${into.type}Index`]: into.index } : {})
   store.dispatch(actions.updateCard(modifiedCard))
   actionSubject.next({ out, into, card: modifiedCard })
@@ -64,7 +64,7 @@ export const getHolderTypes = ({ card }) => {
 }
 
 export const findHolderType = ({ card }) => {
-  return ['deck', 'hand', 'fighter', 'archer', 'thrower', 'table'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
+  return ['deck', 'hand', 'fighter', 'archer', 'thrower', 'table', 'tomb'].find(holderType => Number.isInteger(card[`${holderType}Index`]))
 }
 
 export const isHolderMatch = ({ holder, holderTypes }) => {
@@ -88,8 +88,10 @@ export const getIndex = ({ card }) => {
   return card[`${findHolderType({ card })}Index`]
 }
 
-export const getSelectableCards = ({ card, players }) => {
-  return players.reduce((acc, player) => (acc.concat(getTableCards({ index: player.index }))), []).filter(c => c.id !== card.id)
+export const getSelectableCards = ({ card, players, holderTypes = ['fighter', 'archer', 'thrower'] }) => {
+  return players.reduce((acc, player) => (acc.concat(
+    holderTypes.reduce((acc, type) => (acc.concat(getCards({ type, index: player.index }))), [])
+  )), []).filter(c => c.id !== card.id)
 }
 
 export const isAlly = ({ card1, card2 }) => {
@@ -102,4 +104,16 @@ export const isEnemy = ({ card1, card2 }) => {
 
 export const get = ({ card }) => {
   return store.getState().cards.find(c => c.id === card.id)
+}
+
+export const isFoundInBothHolder = ({ card, holder1, holder2 }) => {
+  return getCards(holder1).find(c => c.key === card.key) && getCards(holder2).find(c => c.key === card.key)
+}
+
+export const consume = ({ card, target, isBoost = true }) => {
+  isBoost && boost({ card, value: calculate({ card: target }) })
+
+  const index = getIndex({ card: target })
+  const out = getHolder({ type: findHolderType({ card: target }), index })
+  act({ out, into: out.type === 'tomb' ? null : getHolder({ type: 'tomb', index }), card: target })
 }

@@ -73,25 +73,31 @@ export const wild_hunt_navigator = {
   }
 }
 
-// TODO: Test with Muzzle
 export const wild_hunt_longship = {
   subscription: {},
 
   tableIn: ({ out, card }) => {
-    const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
-    fulfilledCards.forEach(card => boost({ card, value: 1 }))
+    if (!wild_hunt_longship.subscription[card.id]) {
+      const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+      fulfilledCards.forEach(card => boost({ card, value: 1 }))
 
-    wild_hunt_longship.subscription[card.id] = actionSubject.subscribe(action => {
-      if (isAlly({ card1: card, card2: action.card }) && isWildHunt({ card: action.card })) {
-        boost({ card: action.card, value: 1 })
-      }
-    })
+      wild_hunt_longship.subscription[card.id] = actionSubject.subscribe(action => {
+        if (isWildHunt({ card: action.card })) {
+          const origin = store.getState().cards.find(c => c.id === card.id)
+          if (isAlly({ card1: origin, card2: action.card }) && action.card.id !== origin.id) {
+            boost({ card: action.card, value: 1 })
+          }
+        }
+      })
+    }
   },
   destroyed: ({ out, card }) => {
-    const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
-    fulfilledCards.forEach(card => demage({ card, value: 1 }))
+    if (wild_hunt_longship.subscription[card.id]) {
+      const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+      fulfilledCards.forEach(card => demage({ card, value: 1 }))
 
-    wild_hunt_longship.subscription[card.id].unsubscribe()
+      wild_hunt_longship.subscription[card.id].unsubscribe()
+    }
   }
 }
 

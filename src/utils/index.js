@@ -76,8 +76,12 @@ export const demage = ({ card, value }) => {
 
   if (calculate({ card }) <= 0) {
     const index = getIndex({ card })
-    act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card })
+    act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card: restore({ card }) })
   }
+}
+
+export const restore = ({ card }) => {
+  return { ...card, boosted: 0, strengthened: 0 }
 }
 
 export const boost = ({ card, value }) => {

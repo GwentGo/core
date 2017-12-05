@@ -1,6 +1,6 @@
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -51,5 +51,16 @@ export const white_frost = {
         act({ out: { type: 'derivation', index: out.index }, into: getHolder({ type: into.type === 'fighter' ? 'archer' : 'thrower', index: into.index }), card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
       },
     }))
+  }
+}
+
+export const geralt__igni = {
+  deploy: ({ out, card }) => {
+    const cards = getCards(getHolder({ type: findHolderType({ card }), index: getNextPlayer({ index: out.index }).index }))
+    if (calculatePower({ cards }) >= 25) {
+      const highestPointsCard = cards.reduce((acc, card) => (calculate({ card }) < calculate({ card: acc }) ? card : acc), cards[0])
+      const highestPointsCards = cards.filter(card => calculate({ card }) === calculate({ card: highestPointsCard }))
+      highestPointsCards.forEach(card => destroy({ card }))
+    }
   }
 }

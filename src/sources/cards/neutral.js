@@ -1,6 +1,8 @@
+import Random from 'random-js'
+
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower, getTableCards } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -62,5 +64,14 @@ export const geralt__igni = {
       const highestPointsCards = cards.filter(card => calculate({ card }) === calculate({ card: highestPointsCard }))
       highestPointsCards.forEach(card => destroy({ card }))
     }
+  }
+}
+
+export const iris = {
+  destroyed: ({ out, into, card }) => {
+    const r = new Random()
+    const cards = getTableCards({ index: getNextPlayer({ index: out.index }).index })
+    const randomCards = r.sample(cards, Math.min(cards.length, 5))
+    randomCards.forEach(card => boost({ card, value: 5 }))
   }
 }

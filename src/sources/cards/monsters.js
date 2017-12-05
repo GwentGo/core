@@ -204,3 +204,22 @@ export const caranthir = {
     act({ out: { type: 'derivation', index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
   }
 }
+
+export const caretaker = {
+  deploy: ({ out, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['tomb'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card })
+
+    store.dispatch(actions.selectingTo({
+      player: getNextPlayer({ index }),
+      holderTypes: getHolderTypes({ card: selectedCard }),
+      curriedAction: into => ({ out: getHolder({ type: 'tomb', index }), into, card: selectedCard }),
+    }))
+  }
+}

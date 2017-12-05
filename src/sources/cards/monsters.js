@@ -6,6 +6,7 @@ import * as actions from '../../actions'
 import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
+import * as derivatives from './derivatives'
 
 const isWildHunt = ({ card }) => {
   return card.attributes && card.attributes.indexOf('Wild Hunt') !== -1
@@ -183,5 +184,23 @@ export const frightener = {
     const deck = getHolder({ type: 'deck', index: player.index })
     const topCard = getCards(deck)[0]
     act({ out: deck, into: getHolder({ type: 'hand', index: player.index }), card: topCard })
+  }
+}
+
+export const caranthir = {
+  deploy: ({ out, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, holderTypes: ['fighter', 'archer', 'thrower'], selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card: selectedCard })
+    const out = getHolder({ type: findHolderType({ card: selectedCard }), index })
+    const into = getHolder({ type: findHolderType({ card }), index })
+    act({ out, into, card: selectedCard })
+
+    act({ out: { type: 'derivation', index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
   }
 }

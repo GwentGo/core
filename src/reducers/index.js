@@ -29,7 +29,6 @@ selecting: {
   specific: {
     card,
     players: [],
-    holderTypes: ['hand', 'fighter', 'archer', 'thrower'],
     selectableCards: [],
     numbers: xxx,
   }

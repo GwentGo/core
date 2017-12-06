@@ -130,3 +130,24 @@ export const destroy = ({ card }) => {
   const index = getIndex({ card })
   act({ out: getHolder({ type: findHolderType({ card }), index }), into: getHolder({ type: 'tomb', index }), card })
 }
+
+export const removeOut = ({ id, holder }) => {
+  const cardIds = holder.cardIds
+  const n = cardIds.indexOf(id)
+  holder.cardIds = cardIds.slice(0, n).concat(cardIds.slice(n + 1))
+}
+
+export const shuffleIn = ({ id, holder }) => {
+  const cardIds = holder.cardIds
+  const n = new Random().integer(0, cardIds.length)
+  holder.cardIds = cardIds.slice(0, n).concat(id, cardIds.slice(n))
+}
+
+export const syncCardIds = ({ holder }) => {
+  const holderCards = getCards(holder)
+  const toRemoveIds = holder.cardIds.reduce((acc, id) => (holderCards.find(card => card.id === id) ? acc : acc.concat(id)), [])
+  const toAddIds = holderCards.reduce((acc, card) => (holder.cardIds.find(id => id === card.id) ? acc : acc.concat(card.id)), [])
+  toRemoveIds.forEach(id => removeOut({ id, holder }))
+  toAddIds.forEach(id => shuffleIn({ id, holder }))
+  return true
+}

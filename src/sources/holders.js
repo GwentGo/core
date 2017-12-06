@@ -4,10 +4,12 @@ export const decks = [{
   id: uuid(),
   index: 0,
   type: 'deck',
+  cardIds: [],
 }, {
   id: uuid(),
   index: 1,
   type: 'deck',
+  cardIds: [],
 }]
 
 export const hands = [{

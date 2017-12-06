@@ -15,7 +15,7 @@ cards = [{
   tombIndex: xxx,
 }]
 
-selecting: {
+selecting = {
   from: {
     player,
     holderTypes: ['hand', 'fighter'],

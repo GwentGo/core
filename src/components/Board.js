@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds } from '../utils'
 
 const styles = {
   root: {
@@ -315,11 +315,14 @@ class Board extends Component {
                 </Typography>
                 <Grid>
                   <Grid container className={classes.gridList}>
-                  {deckCards.map(card => (
-                    <Grid key={card.id} item>
-                      <Card card={card} />
-                    </Grid>
-                  ))}
+                    {syncCardIds({ holder: deck }) && deck.cardIds.map(id => {
+                      const card = deckCards.find(card => card.id === id)
+                      return (
+                        <Grid key={card.id} item>
+                          <Card card={card} />
+                        </Grid>
+                      )
+                    })}
                   </Grid>
                 </Grid>
               </div>

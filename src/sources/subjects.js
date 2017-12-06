@@ -5,7 +5,7 @@ import 'rxjs/add/observable/interval'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer } from '../utils'
+import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer, syncCardIds } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -25,6 +25,10 @@ export const specificSubject = new Subject()
 export const timerObservable = Observable.interval(300)
 
 export const subscribeActionSubject = () => {
+  actionSubject.subscribe(({ out }) => {
+    syncCardIds({ holder: getHolder({ type: 'deck', index: out.index }) })
+  })
+
   actionSubject.subscribe(action => {
     const { out, into, card } = action
     const sourceCard = cards[card.key]

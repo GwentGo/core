@@ -48,6 +48,7 @@ class Board extends Component {
     this.props.fetchPlayers()
     this.props.fetchCards().then(() => {
       this.setupHandCards()
+      this.setupHolderCardIds()
       roundSubject.next({ sequence: 1 })
     })
 
@@ -146,6 +147,12 @@ class Board extends Component {
     })
   }
 
+  setupHolderCardIds = () => {
+    holders.decks.forEach(deck => {
+      syncCardIds({ holder: deck })
+    })
+  }
+
   setupTurn = turn => {
     this.setState({ currentPlayer: turn.player }, () => {
       this.props.selectingFrom({ player: turn.player, holderTypes: ['hand'] })
@@ -161,9 +168,11 @@ class Board extends Component {
     const { replacing } = this.state
     this.props.updateCard({ ...card, handIndex: '', deckIndex: replacing.currentIndex })
 
-    const deckCards = this.props.cards.filter(card => card.deckIndex === replacing.currentIndex)
-    const randomCard = getRandomCards(deckCards, { numbers: 1 })[0]
+    const deck = getHolder({ type: 'deck', index: replacing.currentIndex })
+    const randomCard = getRandomCards(getCards(deck), { numbers: 1 })[0]
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
+
+    syncCardIds({ holder: deck })
   }
 
   isPlayerMatchWithCurrentPlayer = player => {
@@ -315,11 +324,11 @@ class Board extends Component {
                 </Typography>
                 <Grid>
                   <Grid container className={classes.gridList}>
-                    {syncCardIds({ holder: deck }) && deck.cardIds.map(id => {
+                    {deck.cardIds.map(id => {
                       const card = deckCards.find(card => card.id === id)
                       return (
                         <Grid key={card.id} item>
-                          <Card card={card} />
+                          <Card card={card} onSelect={this.onSelect({ player, card })} />
                         </Grid>
                       )
                     })}

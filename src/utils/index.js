@@ -149,5 +149,9 @@ export const syncCardIds = ({ holder }) => {
   const toAddIds = holderCards.reduce((acc, card) => (holder.cardIds.find(id => id === card.id) ? acc : acc.concat(card.id)), [])
   toRemoveIds.forEach(id => removeOut({ id, holder }))
   toAddIds.forEach(id => shuffleIn({ id, holder }))
-  return true
+}
+
+export const findCards = ({ ids }) => {
+  const cards = store.getState().cards
+  return ids.reduce((acc, id) => acc.concat(cards.find(card => card.id === id)), [])
 }

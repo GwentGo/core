@@ -69,9 +69,8 @@ export const geralt__igni = {
 
 export const iris = {
   destroyed: ({ out, into, card }) => {
-    const r = new Random()
     const cards = getTableCards({ index: getNextPlayer({ index: out.index }).index })
-    const randomCards = r.sample(cards, Math.min(cards.length, 5))
+    const randomCards = new Random().sample(cards, Math.min(cards.length, 5))
     randomCards.forEach(card => boost({ card, value: 5 }))
   }
 }

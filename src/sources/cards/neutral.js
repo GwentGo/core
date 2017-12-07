@@ -35,7 +35,7 @@ export const muzzle = {
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
   },
   specific: ({ card, specificCards }) => {
-    const selectedCard = { ...specificCards[0], isSpy: true }
+    const selectedCard = { ...specificCards[0], isSpy: !specificCards[0].isSpy }
     const index = getIndex({ card: selectedCard })
     const type = findHolderType({ card: selectedCard })
 

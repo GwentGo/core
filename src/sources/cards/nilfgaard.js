@@ -1,6 +1,9 @@
+import uuid from 'uuid/v4'
+
 import { store } from '../store'
 import * as actions from '../../actions'
 import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer } from '../../utils'
+import origins from '../../utils/cards/origins'
 
 export const emissary = {
   deploy: ({ out, card }) => {
@@ -24,5 +27,18 @@ export const emissary = {
     const anotherCard = fulfilledCards.find(card => card.id !== selectedCard.id)
     removeOut({ id: anotherCard.id, holder: outDeck })
     shuffleIn({ id: anotherCard.id, holder: outDeck })
+  }
+}
+
+export const ceallach = {
+  deploy: ({ out }) => {
+    const associationCards = origins.filter(card => card.key === 'ambassador' || card.key === 'assassin' || card.key === 'emissary').map(card => ({
+      id: uuid(),
+      pickingIndex: out.index,
+      ...card,
+    }))
+    store.dispatch(actions.addCards(associationCards))
+
+    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['picking'] }))
   }
 }

@@ -2,8 +2,9 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy,  } from '../../utils'
 import origins from '../../utils/cards/origins'
+import { actionSubject } from '../subjects'
 
 export const emissary = {
   deploy: ({ out, card }) => {
@@ -40,5 +41,30 @@ export const ceallach = {
     store.dispatch(actions.addCards(associationCards))
 
     store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['picking'] }))
+  }
+}
+
+export const impera_brigade = {
+  subscription: {},
+
+  deploy: ({ out, card }) => {
+    if (!impera_brigade.subscription[card.id]) {
+      const fulfilledCards = getTableCards({ index: getNextPlayer({ index: out.index }).index }).filter(c => c.isSpy )
+      boost({ card, value: fulfilledCards.length * 2 })
+
+      impera_brigade.subscription[card.id] = actionSubject.subscribe(action => {
+        if (action.card.isSpy) {
+          const updatedCard = get({ card })
+          if (isEnemy({ card1: updatedCard, card2: action.card })) {
+            boost({ card: updatedCard, value: 2 })
+          }
+        }
+      })
+    }
+  },
+  destroyed: ({ out, card }) => {
+    if (impera_brigade.subscription[card.id]) {
+      impera_brigade.subscription[card.id].unsubscribe()
+    }
   }
 }

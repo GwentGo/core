@@ -75,14 +75,15 @@ export const wild_hunt_navigator = {
 }
 
 export const wild_hunt_longship = {
-  subscription: {},
+  subscriptions: {},
 
   tableIn: ({ out, card }) => {
-    if (!wild_hunt_longship.subscription[card.id]) {
+    let subscription = wild_hunt_longship.subscriptions[card.id]
+    if (!subscription) {
       const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
       fulfilledCards.forEach(card => boost({ card, value: 1 }))
 
-      wild_hunt_longship.subscription[card.id] = actionSubject.subscribe(action => {
+      subscription = actionSubject.subscribe(action => {
         if (isWildHunt({ card: action.card })) {
           const updatedCard = get({ card })
           if (isAlly({ card1: updatedCard, card2: action.card }) && action.card.id !== updatedCard.id) {
@@ -93,11 +94,13 @@ export const wild_hunt_longship = {
     }
   },
   destroyed: ({ out, card }) => {
-    if (wild_hunt_longship.subscription[card.id]) {
+    let subscription = wild_hunt_longship.subscriptions[card.id]
+    if (subscription) {
+      subscription.unsubscribe()
+      subscription = null
+
       const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
       fulfilledCards.forEach(card => demage({ card, value: 1 }))
-
-      wild_hunt_longship.subscription[card.id].unsubscribe()
     }
   }
 }

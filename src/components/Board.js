@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds, hasDoneSelecting } from '../utils'
 
 const styles = {
   root: {
@@ -241,7 +241,7 @@ class Board extends Component {
 
   subscribeTimerObservable = () => {
     this.subscription = timerObservable.subscribe(() => {
-      if (!(this.props.selecting.from || this.props.selecting.to || this.props.selecting.specific)) {
+      if (hasDoneSelecting()) {
         this.subscription.unsubscribe()
         this.subscription = null
         toggleTurn({ currentPlayer: this.state.currentPlayer })

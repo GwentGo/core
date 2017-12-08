@@ -155,3 +155,8 @@ export const findCards = ({ ids }) => {
   const cards = store.getState().cards
   return ids.reduce((acc, id) => acc.concat(cards.find(card => card.id === id)), [])
 }
+
+export const hasDoneSelecting = () => {
+  const { selecting } = store.getState()
+  return !(selecting.from || selecting.to || selecting.specific)
+}

@@ -5,6 +5,9 @@ export const specials = {
   frightener: {
     isDoomed: true,
   },
+  emhyr_var_emreis: {
+    isDoomed: true,
+  }
 }
 
 export const common = card => ({

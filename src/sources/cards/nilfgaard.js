@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy,  } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy, getSelectableCards, act, findHolderType } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -45,14 +45,15 @@ export const ceallach = {
 }
 
 export const impera_brigade = {
-  subscription: {},
+  subscriptions: {},
 
   deploy: ({ out, card }) => {
-    if (!impera_brigade.subscription[card.id]) {
+    let subscription = impera_brigade.subscriptions[card.id]
+    if (!subscription) {
       const fulfilledCards = getTableCards({ index: getNextPlayer({ index: out.index }).index }).filter(c => c.isSpy )
       boost({ card, value: fulfilledCards.length * 2 })
 
-      impera_brigade.subscription[card.id] = actionSubject.subscribe(action => {
+      subscription = actionSubject.subscribe(action => {
         if (action.card.isSpy) {
           const updatedCard = get({ card })
           if (isEnemy({ card1: updatedCard, card2: action.card })) {
@@ -63,8 +64,29 @@ export const impera_brigade = {
     }
   },
   destroyed: ({ out, card }) => {
-    if (impera_brigade.subscription[card.id]) {
-      impera_brigade.subscription[card.id].unsubscribe()
+    let subscription = impera_brigade.subscriptions[card.id]
+    if (subscription) {
+      subscription.unsubscribe()
+      subscription = null
     }
+  }
+}
+
+export const emhyr_var_emreis = {
+  deploy: ({ out }) => {
+    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['hand'] }))
+  },
+  then: ({ card }) => {
+    const index = getIndex({ card })
+    const players = [getCurrentPlayer({ index })]
+    const selectableCards = getSelectableCards({ card, players }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const numbers = Math.min(selectableCards.length, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+  },
+  specific: ({ card, specificCards }) => {
+    const selectedCard = specificCards[0]
+    const index = getIndex({ card })
+
+    act({ out: getHolder({ type: findHolderType({ card: selectedCard }), index }), into: getHolder({ type: 'hand', index }), card: selectedCard })
   }
 }

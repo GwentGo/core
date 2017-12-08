@@ -5,7 +5,7 @@ import 'rxjs/add/observable/interval'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer, syncCardIds } from '../utils'
+import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer, syncCardIds, hasDoneSelecting } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -21,6 +21,9 @@ export const roundSubject = new Subject()
 
 // specific = { card, specificCards }
 export const specificSubject = new Subject()
+
+// then = { card }
+export const thenObservable = Observable.interval(20)
 
 export const timerObservable = Observable.interval(300)
 
@@ -48,6 +51,10 @@ export const subscribeActionSubject = () => {
 
           if (['hand', 'deck', 'tomb', 'picking'].indexOf(out.type) !== -1) {
             sourceCard['deploy'] && sourceCard['deploy'](action)
+
+            if (sourceCard['then']) {
+              subscribeThenObservable(card)
+            }
           }
         } else {
           if (into.type === 'tomb' && ['fighter', 'archer', 'thrower'].indexOf(out.type) !== -1) {
@@ -106,5 +113,18 @@ export const subscribeSpecificSubject = () => {
   specificSubject.subscribe(specific => {
     const specificFunction = cards[specific.card.key]['specific']
     specificFunction && specificFunction(specific)
+  })
+}
+
+const subscriptions = {}
+export const subscribeThenObservable = card => {
+  let subscription = subscriptions[card.id]
+  subscription = thenObservable.subscribe(() => {
+    if (hasDoneSelecting()) {
+      subscription.unsubscribe()
+      subscription = null
+
+      cards[card.key]['then']({ card })
+    }
   })
 }

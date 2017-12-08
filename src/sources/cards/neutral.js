@@ -19,8 +19,7 @@ export const swallow_potion = {
   tableIn: ({ out, into, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players })
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ specificCards }) => {
     specificCards.forEach(card => boost({ card, value: 8 }))
@@ -31,8 +30,7 @@ export const muzzle = {
   tableIn: ({ out, into, card }) => {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = { ...specificCards[0], isSpy: !specificCards[0].isSpy }

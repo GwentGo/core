@@ -9,9 +9,8 @@ import { actionSubject } from '../subjects'
 export const emissary = {
   deploy: ({ out, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
-    const fulfilledCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).filter(card => card.type === 'Bronze').slice(0, 2)
-    const numbers = Math.min(fulfilledCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards: fulfilledCards, numbers }))
+    const selectableCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).filter(card => card.type === 'Bronze').slice(0, 2)
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -80,13 +79,11 @@ export const emhyr_var_emreis = {
     const index = getIndex({ card })
     const players = [getCurrentPlayer({ index })]
     const selectableCards = getSelectableCards({ card, players }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
     const index = getIndex({ card })
-
     act({ out: getHolder({ type: findHolderType({ card: selectedCard }), index }), into: getHolder({ type: 'hand', index }), card: selectedCard })
   }
 }

@@ -39,8 +39,7 @@ export const wild_hunt_warrior = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players })
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -57,8 +56,7 @@ export const wild_hunt_navigator = {
   deploy: ({ out, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
     const selectableCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.type === 'Bronze' && c.id !== card.id )
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -129,8 +127,7 @@ export const drowner = {
   deploy: ({ card }) => {
     const players = getPlayers()
     const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -151,8 +148,7 @@ export const slyzard = {
     const holder1 = getHolder({ type: 'tomb', index: out.index })
     const holder2 = getHolder({ type: 'deck', index: out.index })
     const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -173,8 +169,7 @@ export const frightener = {
   deploy: ({ into, card }) => {
     const players = [getCurrentPlayer({ index: into.index })]
     const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -194,8 +189,7 @@ export const caranthir = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
@@ -212,13 +206,11 @@ export const caretaker = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
     const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
-    const numbers = Math.min(selectableCards.length, 1)
-    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
     const index = getIndex({ card })
-
     store.dispatch(actions.selectingTo({
       player: getNextPlayer({ index }),
       holderTypes: getHolderTypes({ card: selectedCard }),

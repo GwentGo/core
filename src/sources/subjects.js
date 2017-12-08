@@ -37,7 +37,7 @@ export const subscribeActionSubject = () => {
     const sourceCard = cards[card.key]
 
     if (out.type === 'picking') {
-      store.dispatch(actions.removeCards(getCards({ type: 'picking', index: out.index })))
+      store.dispatch(actions.removeCards(getCards({ holder: getHolder({ type: 'picking', index: out.index }) })))
     }
 
     if (sourceCard) {
@@ -95,10 +95,10 @@ export const subscribeTurnSubject = () => {
     ['fighter', 'archer', 'thrower'].forEach(holderType => {
       const holder = getHolder({ type: holderType, index: player.index })
       if (holder.weather && holder.weather.card.key === 'frost_hazard') {
-        const cards = getCards({ type: holderType, index: player.index })
+        const cards = getCards({ holder: getHolder({ type: holderType, index: player.index }) })
         if (cards.length > 0) {
           const nextPlayer = getNextPlayer({ index: holder.index })
-          const oppositeCards = getCards({ type: holderType, index: nextPlayer.index })
+          const oppositeCards = getCards({ holder: getHolder({ type: holderType, index: nextPlayer.index }) })
           const wild_hunt_rider = oppositeCards.filter(card => card.key === 'wild_hunt_rider')
 
           const lowestPointsCard = cards.reduce((acc, card) => (calculate({ card }) < calculate({ card: acc }) ? card : acc), cards[0])

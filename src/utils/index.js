@@ -30,7 +30,11 @@ export const act = ({ out, into, card }) => {
   actionSubject.next({ out, into, card: modifiedCard })
 }
 
-export const getCards = ({ type, index }) => {
+export const getPlayers = () => {
+  return store.getState().players
+}
+
+export const getCards = ({ holder: { type, index } }) => {
   return store.getState().cards.filter(card => card[`${type}Index`] === index)
 }
 
@@ -40,10 +44,6 @@ export const getTableCards = ({ index }) => {
   } else {
     return store.getState().cards.filter(card => Number.isInteger(card.fighterIndex) || Number.isInteger(card.archerIndex) || Number.isInteger(card.throwerIndex))
   }
-}
-
-export const getPlayers = () => {
-  return store.getState().players
 }
 
 export const calculatePower = ({ cards }) => {
@@ -92,7 +92,7 @@ export const getIndex = ({ card }) => {
   return card[`${findHolderType({ card })}Index`]
 }
 
-export const getSelectableCards = ({ card, players, holderTypes = ['fighter', 'archer', 'thrower'] }) => {
+export const getAvailableCards = ({ card, players, holderTypes = ['fighter', 'archer', 'thrower'] }) => {
   return players.reduce((acc, player) => (acc.concat(
     holderTypes.reduce((acc, type) => (acc.concat(getCards({ type, index: player.index }))), [])
   )), []).filter(c => c.id !== card.id)
@@ -111,7 +111,7 @@ export const get = ({ card }) => {
 }
 
 export const isFoundInBothHolder = ({ card, holder1, holder2 }) => {
-  return getCards(holder1).find(c => c.key === card.key) && getCards(holder2).find(c => c.key === card.key)
+  return getCards({ holder: holder1 }).find(c => c.key === card.key) && getCards({ holder: holder2 }).find(c => c.key === card.key)
 }
 
 export const consume = ({ card, target, isBoost = true }) => {
@@ -144,7 +144,7 @@ export const shuffleIn = ({ id, holder }) => {
 }
 
 export const syncCardIds = ({ holder }) => {
-  const holderCards = getCards(holder)
+  const holderCards = getCards({ holder })
   const toRemoveIds = holder.cardIds.reduce((acc, id) => (holderCards.find(card => card.id === id) ? acc : acc.concat(id)), [])
   const toAddIds = holderCards.reduce((acc, card) => (holder.cardIds.find(id => id === card.id) ? acc : acc.concat(card.id)), [])
   toRemoveIds.forEach(id => removeOut({ id, holder }))

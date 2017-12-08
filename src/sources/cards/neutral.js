@@ -2,7 +2,7 @@ import Random from 'random-js'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getSelectableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower, getTableCards } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getAvailableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower, getTableCards } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -18,7 +18,7 @@ export const biting_frost = {
 export const swallow_potion = {
   tableIn: ({ out, into, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players })
+    const selectableCards = getAvailableCards({ card, players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ specificCards }) => {
@@ -29,7 +29,7 @@ export const swallow_potion = {
 export const muzzle = {
   tableIn: ({ out, into, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
+    const selectableCards = getAvailableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -56,7 +56,7 @@ export const white_frost = {
 
 export const geralt__igni = {
   deploy: ({ out, card }) => {
-    const cards = getCards(getHolder({ type: findHolderType({ card }), index: getNextPlayer({ index: out.index }).index }))
+    const cards = getCards({ holder: getHolder({ type: findHolderType({ card }), index: getNextPlayer({ index: out.index }).index }) })
     if (calculatePower({ cards }) >= 25) {
       const highestPointsCard = cards.reduce((acc, card) => (calculate({ card }) < calculate({ card: acc }) ? card : acc), cards[0])
       const highestPointsCards = cards.filter(card => calculate({ card }) === calculate({ card: highestPointsCard }))

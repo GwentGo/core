@@ -99,7 +99,7 @@ class Board extends Component {
       this.judge()
 
       getPlayers().forEach(player => {
-        const deckCards = getCards({ type: 'deck', index: player.index })
+        const deckCards = getCards({ holder: getHolder({ type: 'deck', index: player.index }) })
         getRandomCards(deckCards, { numbers: round.sequence === 2 ? 2 : 1 }).forEach(card => {
           this.props.updateCard({ ...card, deckIndex: '', handIndex: player.index })
         })
@@ -169,7 +169,7 @@ class Board extends Component {
     this.props.updateCard({ ...card, handIndex: '', deckIndex: replacing.currentIndex })
 
     const deck = getHolder({ type: 'deck', index: replacing.currentIndex })
-    const randomCard = getRandomCards(getCards(deck), { numbers: 1 })[0]
+    const randomCard = getRandomCards(getCards({ holder: deck }), { numbers: 1 })[0]
     this.props.updateCard({ ...randomCard, deckIndex: '', handIndex: replacing.currentIndex })
 
     syncCardIds({ holder: deck })

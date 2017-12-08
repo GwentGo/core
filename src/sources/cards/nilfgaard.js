@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy, getSelectableCards, act, findHolderType } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy, getAvailableCards, act, findHolderType } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -78,7 +78,7 @@ export const emhyr_var_emreis = {
   then: ({ card }) => {
     const index = getIndex({ card })
     const players = [getCurrentPlayer({ index })]
-    const selectableCards = getSelectableCards({ card, players }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const selectableCards = getAvailableCards({ card, players }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {

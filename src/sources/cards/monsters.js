@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getSelectableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getAvailableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
 import * as derivatives from './derivatives'
@@ -27,7 +27,7 @@ export const eredin = {
 
 export const wild_hunt_hound = {
   deploy: ({ out }) => {
-    const deckCards = getCards({ type: 'deck', index: out.index })
+    const deckCards = getCards({ holder: getHolder({ type: 'deck', index: out.index }) })
     const biting_frost = deckCards.find(card => card.key === 'biting_frost')
     if (biting_frost) {
       act({ out: getHolder({ type: 'deck', index: out.index }), into: getHolder({ type: 'table', index: out.index }), card: biting_frost })
@@ -38,7 +38,7 @@ export const wild_hunt_hound = {
 export const wild_hunt_warrior = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players })
+    const selectableCards = getAvailableCards({ card, players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -61,7 +61,7 @@ export const wild_hunt_navigator = {
   specific: ({ card, specificCards }) => {
     const selectedCard = specificCards[0]
     const index = getIndex({ card })
-    const upcomingCard = getCards({ type: 'deck', index }).find(c => c.key === selectedCard.key)
+    const upcomingCard = getCards({ holder: getHolder({ type: 'deck', index }) }).find(c => c.key === selectedCard.key)
     if (upcomingCard) {
       store.dispatch(actions.selectingTo({
         player: getCurrentPlayer({ index }),
@@ -115,7 +115,7 @@ export const ice_giant = {
 
 export const crone__brewess = {
   deploy: ({ out, into }) => {
-    const deckCards = getCards({ type: 'deck', index: out.index })
+    const deckCards = getCards({ holder: getHolder({ type: 'deck', index: out.index }) })
     const crones = deckCards.filter(card => card.key.indexOf('crone') !== -1)
     crones.forEach(card => act({ out: getHolder({ type: findHolderType({ card }), index: out.index }), into, card }))
   }
@@ -126,7 +126,7 @@ export const crone__whispess = crone__brewess
 export const drowner = {
   deploy: ({ card }) => {
     const players = getPlayers()
-    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -147,7 +147,7 @@ export const slyzard = {
     const players = [getCurrentPlayer({ index: out.index })]
     const holder1 = getHolder({ type: 'tomb', index: out.index })
     const holder2 = getHolder({ type: 'deck', index: out.index })
-    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
+    const selectableCards = getAvailableCards({ card, players, holderTypes: ['tomb'] }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -156,7 +156,7 @@ export const slyzard = {
 
     const index = getIndex({ card })
     const out = getHolder({ type: 'deck', index })
-    const thatCopy = getCards(out).find(c => c.key === selectedCard.key)
+    const thatCopy = getCards({ holder: out }).find(c => c.key === selectedCard.key)
     store.dispatch(actions.selectingTo({
       player: getCurrentPlayer({ index }),
       holderTypes: getHolderTypes({ card: thatCopy }),
@@ -168,7 +168,7 @@ export const slyzard = {
 export const frightener = {
   deploy: ({ into, card }) => {
     const players = [getCurrentPlayer({ index: into.index })]
-    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -180,7 +180,7 @@ export const frightener = {
 
     const player = getNextPlayer({ index })
     const deck = getHolder({ type: 'deck', index: player.index })
-    const topCard = getCards(deck)[0]
+    const topCard = getCards({ holder: deck })[0]
     act({ out: deck, into: getHolder({ type: 'hand', index: player.index }), card: topCard })
   }
 }
@@ -188,7 +188,7 @@ export const frightener = {
 export const caranthir = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -205,7 +205,7 @@ export const caranthir = {
 export const caretaker = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getSelectableCards({ card, players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const selectableCards = getAvailableCards({ card, players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {

@@ -1,11 +1,11 @@
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getPlayers, getAvailableCards, demage } from '../../utils'
+import { getPlayers, demage, getCards } from '../../utils'
 
 export const clan_brokvar_archer = {
   deploy: ({ card }) => {
     const players = getPlayers()
-    const selectableCards = getAvailableCards({ card, players })
+    const selectableCards = getCards({ players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 3) }))
   },
   specific: ({ specificCards }) => {

@@ -3,7 +3,7 @@ import uuid from 'uuid/v4'
 import origins from '../../utils/cards/origins'
 import { store } from '../store'
 import * as actions from '../../actions'
-import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, getAvailableCards, demage, getIndex, calculate, getHolderTypes, getTableCards, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
+import { act, getHolder, getCurrentPlayer, getCards, boost, findHolderType, getNextPlayer, demage, getIndex, calculate, getHolderTypes, isAlly, getPlayers, isEnemy, get, isFoundInBothHolder, consume, isBelongTo } from '../../utils'
 import * as holders from '../../sources/holders'
 import { actionSubject } from '../subjects'
 import * as derivatives from './derivatives'
@@ -38,7 +38,7 @@ export const wild_hunt_hound = {
 export const wild_hunt_warrior = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getAvailableCards({ card, players })
+    const selectableCards = getCards({ players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -55,7 +55,7 @@ export const wild_hunt_warrior = {
 export const wild_hunt_navigator = {
   deploy: ({ out, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
-    const selectableCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.type === 'Bronze' && c.id !== card.id )
+    const selectableCards = getCards({ players }).filter(c => isWildHunt({ card: c }) && c.type === 'Bronze' && c.id !== card.id )
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -78,7 +78,7 @@ export const wild_hunt_longship = {
   tableIn: ({ out, card }) => {
     let subscription = wild_hunt_longship.subscriptions[card.id]
     if (!subscription) {
-      const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+      const fulfilledCards = getCards({ players: [getCurrentPlayer({ index: out.index })] }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
       fulfilledCards.forEach(card => boost({ card, value: 1 }))
 
       subscription = actionSubject.subscribe(action => {
@@ -97,7 +97,7 @@ export const wild_hunt_longship = {
       subscription.unsubscribe()
       subscription = null
 
-      const fulfilledCards = getTableCards({ index: out.index }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
+      const fulfilledCards = getCards({ players: [getCurrentPlayer({ index: out.index })] }).filter(c => isWildHunt({ card: c }) && c.id !== card.id )
       fulfilledCards.forEach(card => demage({ card, value: 1 }))
     }
   }
@@ -126,7 +126,7 @@ export const crone__whispess = crone__brewess
 export const drowner = {
   deploy: ({ card }) => {
     const players = getPlayers()
-    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }) && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -147,7 +147,7 @@ export const slyzard = {
     const players = [getCurrentPlayer({ index: out.index })]
     const holder1 = getHolder({ type: 'tomb', index: out.index })
     const holder2 = getHolder({ type: 'deck', index: out.index })
-    const selectableCards = getAvailableCards({ card, players, holderTypes: ['tomb'] }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
+    const selectableCards = getCards({ holder: holder1 }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -168,7 +168,7 @@ export const slyzard = {
 export const frightener = {
   deploy: ({ into, card }) => {
     const players = [getCurrentPlayer({ index: into.index })]
-    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }) && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -188,7 +188,7 @@ export const frightener = {
 export const caranthir = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getAvailableCards({ card, players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
+    const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -205,7 +205,7 @@ export const caranthir = {
 export const caretaker = {
   deploy: ({ out, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getAvailableCards({ card, players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const selectableCards = getCards({ players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {

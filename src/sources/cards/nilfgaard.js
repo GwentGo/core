@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, getTableCards, boost, get, isEnemy, getAvailableCards, act, findHolderType } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -49,7 +49,7 @@ export const impera_brigade = {
   deploy: ({ out, card }) => {
     let subscription = impera_brigade.subscriptions[card.id]
     if (!subscription) {
-      const fulfilledCards = getTableCards({ index: getNextPlayer({ index: out.index }).index }).filter(c => c.isSpy )
+      const fulfilledCards = getCards({ players: [getNextPlayer({ index: out.index })] }).filter(c => c.isSpy )
       boost({ card, value: fulfilledCards.length * 2 })
 
       subscription = actionSubject.subscribe(action => {
@@ -78,7 +78,7 @@ export const emhyr_var_emreis = {
   then: ({ card }) => {
     const index = getIndex({ card })
     const players = [getCurrentPlayer({ index })]
-    const selectableCards = getAvailableCards({ card, players }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
+    const selectableCards = getCards({ players }).filter(c => (c.type === 'Bronze' || c.type === 'Silver') && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {

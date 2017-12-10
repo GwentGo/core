@@ -5,7 +5,7 @@ import 'rxjs/add/observable/interval'
 import * as cards from './cards'
 import { store } from '../sources/store'
 import * as actions from '../actions'
-import { calculatePower, getPlayers, getTableCards, calculate, getHolder, getCards, demage, boost, getNextPlayer, syncCardIds, hasDoneSelecting } from '../utils'
+import { calculatePower, getPlayers, calculate, getHolder, getCards, demage, boost, getNextPlayer, syncCardIds, hasDoneSelecting } from '../utils'
 
 // action = { out, into, card }
 export const actionSubject = new Subject()
@@ -70,7 +70,7 @@ export const subscribeActionSubject = () => {
 
   actionSubject.subscribe(() => {
     getPlayers().forEach(player => {
-      store.dispatch(actions.updatePlayer({ ...player, power: calculatePower({ cards: getTableCards({ index: player.index }) }) }))
+      store.dispatch(actions.updatePlayer({ ...player, power: calculatePower({ cards: getCards({ players: [player] }) }) }))
     })
   })
 }
@@ -80,7 +80,7 @@ export const subscribeWeatherSubject = () => {
     weather.holder.weather = weather.card ? weather : null
 
     if (weather.card && weather.card.key === 'frost_hazard') {
-      getTableCards({}).forEach(card => {
+      getCards({ players: getPlayers() }).forEach(card => {
         if (card.key === 'ice_giant' && !card.hasFrostHazardBoosted) {
           boost({ card, value: 6 })
           card.hasFrostHazardBoosted = true

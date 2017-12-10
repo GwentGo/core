@@ -34,15 +34,13 @@ export const getPlayers = () => {
   return store.getState().players
 }
 
-export const getCards = ({ holder: { type, index } }) => {
-  return store.getState().cards.filter(card => card[`${type}Index`] === index)
-}
-
-export const getTableCards = ({ index }) => {
-  if (index !== undefined) {
-    return store.getState().cards.filter(card => card.fighterIndex === index || card.archerIndex === index || card.throwerIndex === index)
-  } else {
-    return store.getState().cards.filter(card => Number.isInteger(card.fighterIndex) || Number.isInteger(card.archerIndex) || Number.isInteger(card.throwerIndex))
+export const getCards = ({ holder, players, holderTypes = ['fighter', 'archer', 'thrower'] }) => {
+  if (holder) {
+    return store.getState().cards.filter(card => card[`${holder.type}Index`] === holder.index)
+  } else if (players) {
+    return players.reduce((acc, player) => (acc.concat(
+      holderTypes.reduce((acc, type) => (acc.concat(getCards({ holder: { type, index: player.index } }))), [])
+    )), [])
   }
 }
 
@@ -90,12 +88,6 @@ export const boost = ({ card, value }) => {
 
 export const getIndex = ({ card }) => {
   return card[`${findHolderType({ card })}Index`]
-}
-
-export const getAvailableCards = ({ card, players, holderTypes = ['fighter', 'archer', 'thrower'] }) => {
-  return players.reduce((acc, player) => (acc.concat(
-    holderTypes.reduce((acc, type) => (acc.concat(getCards({ type, index: player.index }))), [])
-  )), []).filter(c => c.id !== card.id)
 }
 
 export const isAlly = ({ card1, card2 }) => {

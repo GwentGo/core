@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, getTableCards, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds, hasDoneSelecting } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds, hasDoneSelecting, getIndex } from '../utils'
 
 const styles = {
   root: {
@@ -77,11 +77,9 @@ class Board extends Component {
   }
 
   clearTable = () => {
-    getPlayers().forEach(player => {
-      const tableCards = getTableCards({ index: player.index })
-      tableCards.forEach(card => {
-        act({ out: getHolder({ type: findHolderType({ card }), index: player.index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index: player.index }), card })
-      })
+    getCards({ players: getPlayers() }).forEach(card => {
+      const index = getIndex({ card })
+      act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card })
     })
 
     holders.fighters.concat(holders.archers, holders.throwers).forEach(holder => holder.weather = null)

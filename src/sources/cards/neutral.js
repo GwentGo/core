@@ -2,7 +2,7 @@ import Random from 'random-js'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getAvailableCards, getIndex, findHolderType, calculate, destroy, getCards, calculatePower, getTableCards } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getIndex, findHolderType, calculate, destroy, getCards, calculatePower } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -18,7 +18,7 @@ export const biting_frost = {
 export const swallow_potion = {
   tableIn: ({ out, into, card }) => {
     const players = [getCurrentPlayer({ index: out.index })]
-    const selectableCards = getAvailableCards({ card, players })
+    const selectableCards = getCards({ players }).filter(c => c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ specificCards }) => {
@@ -29,7 +29,7 @@ export const swallow_potion = {
 export const muzzle = {
   tableIn: ({ out, into, card }) => {
     const players = [getNextPlayer({ index: out.index })]
-    const selectableCards = getAvailableCards({ card, players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
+    const selectableCards = getCards({ players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, specificCards }) => {
@@ -67,7 +67,7 @@ export const geralt__igni = {
 
 export const iris = {
   destroyed: ({ out, into, card }) => {
-    const cards = getTableCards({ index: getNextPlayer({ index: out.index }).index })
+    const cards = getCards({ players: [getNextPlayer({ index: out.index })] })
     const randomCards = new Random().sample(cards, Math.min(cards.length, 5))
     randomCards.forEach(card => boost({ card, value: 5 }))
   }

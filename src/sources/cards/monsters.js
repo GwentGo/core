@@ -41,12 +41,11 @@ export const wild_hunt_warrior = {
     const selectableCards = getCards({ players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
-    demage({ card: selectedCard, value: 3 })
+  specific: ({ card, specificCard }) => {
+    demage({ card: specificCard, value: 3 })
 
-    const holder = getHolder({ type: findHolderType({ card: selectedCard }), index: getIndex({ card: selectedCard }) })
-    if (calculate({ card: selectedCard }) <= 0 || (holder.weather && holder.weather.card.key === 'frost_hazard')) {
+    const holder = getHolder({ type: findHolderType({ card: specificCard }), index: getIndex({ card: specificCard }) })
+    if (calculate({ card: specificCard }) <= 0 || (holder.weather && holder.weather.card.key === 'frost_hazard')) {
       boost({ card, value: 2 })
     }
   }
@@ -58,10 +57,9 @@ export const wild_hunt_navigator = {
     const selectableCards = getCards({ players }).filter(c => isWildHunt({ card: c }) && c.type === 'Bronze' && c.id !== card.id )
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
+  specific: ({ card, specificCard }) => {
     const index = getIndex({ card })
-    const upcomingCard = getCards({ holder: getHolder({ type: 'deck', index }) }).find(c => c.key === selectedCard.key)
+    const upcomingCard = getCards({ holder: getHolder({ type: 'deck', index }) }).find(c => c.key === specificCard.key)
     if (upcomingCard) {
       store.dispatch(actions.selectingTo({
         player: getCurrentPlayer({ index }),
@@ -129,16 +127,15 @@ export const drowner = {
     const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }) && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
-    const index = getIndex({ card: selectedCard })
-    const outHolder = getHolder({ type: findHolderType({ card: selectedCard }), index })
+  specific: ({ card, specificCard }) => {
+    const index = getIndex({ card: specificCard })
+    const outHolder = getHolder({ type: findHolderType({ card: specificCard }), index })
     const intoHolder = getHolder({ type: findHolderType({ card }), index })
 
-    if (isEnemy({ card1: card, card2: selectedCard })) {
-      demage({ card: selectedCard, value: intoHolder.weather && intoHolder.weather.card ? 4 : 2 })
+    if (isEnemy({ card1: card, card2: specificCard })) {
+      demage({ card: specificCard, value: intoHolder.weather && intoHolder.weather.card ? 4 : 2 })
     }
-    act({ out: outHolder, into: intoHolder, card: selectedCard })
+    act({ out: outHolder, into: intoHolder, card: specificCard })
   }
 }
 
@@ -150,13 +147,12 @@ export const slyzard = {
     const selectableCards = getCards({ holder: holder1 }).filter(card => !isBelongTo({ card, type: 'Special' }) && isFoundInBothHolder({ card, holder1, holder2 }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
-    consume({ card, target: selectedCard, isBoost: false })
+  specific: ({ card, specificCard }) => {
+    consume({ card, target: specificCard, isBoost: false })
 
     const index = getIndex({ card })
     const out = getHolder({ type: 'deck', index })
-    const thatCopy = getCards({ holder: out }).find(c => c.key === selectedCard.key)
+    const thatCopy = getCards({ holder: out }).find(c => c.key === specificCard.key)
     store.dispatch(actions.selectingTo({
       player: getCurrentPlayer({ index }),
       holderTypes: getHolderTypes({ card: thatCopy }),
@@ -171,12 +167,11 @@ export const frightener = {
     const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }) && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
-    const index = getIndex({ card: selectedCard })
-    const outHolder = getHolder({ type: findHolderType({ card: selectedCard }), index })
+  specific: ({ card, specificCard }) => {
+    const index = getIndex({ card: specificCard })
+    const outHolder = getHolder({ type: findHolderType({ card: specificCard }), index })
     const intoHolder = getHolder({ type: findHolderType({ card }), index })
-    act({ out: outHolder, into: intoHolder, card: selectedCard })
+    act({ out: outHolder, into: intoHolder, card: specificCard })
 
     const player = getNextPlayer({ index })
     const deck = getHolder({ type: 'deck', index: player.index })
@@ -191,12 +186,11 @@ export const caranthir = {
     const selectableCards = getCards({ players }).filter(c => findHolderType({ card: c }) !== findHolderType({ card }))
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
-    const index = getIndex({ card: selectedCard })
-    const out = getHolder({ type: findHolderType({ card: selectedCard }), index })
+  specific: ({ card, specificCard }) => {
+    const index = getIndex({ card: specificCard })
+    const out = getHolder({ type: findHolderType({ card: specificCard }), index })
     const into = getHolder({ type: findHolderType({ card }), index })
-    act({ out, into, card: selectedCard })
+    act({ out, into, card: specificCard })
 
     act({ out: { type: 'derivation', index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
   }
@@ -208,13 +202,12 @@ export const caretaker = {
     const selectableCards = getCards({ players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' || card.type === 'Silver')
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
+  specific: ({ card, specificCard }) => {
     const index = getIndex({ card })
     store.dispatch(actions.selectingTo({
       player: getNextPlayer({ index }),
-      holderTypes: getHolderTypes({ card: selectedCard }),
-      curriedAction: into => ({ out: getHolder({ type: 'tomb', index }), into, card: selectedCard }),
+      holderTypes: getHolderTypes({ card: specificCard }),
+      curriedAction: into => ({ out: getHolder({ type: 'tomb', index }), into, card: specificCard }),
     }))
   }
 }

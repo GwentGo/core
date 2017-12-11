@@ -19,7 +19,7 @@ export const turnSubject = new Subject()
 // round = { sequence }
 export const roundSubject = new Subject()
 
-// specific = { card, specificCards }
+// specific = { card, specificCard, specificCards }
 export const specificSubject = new Subject()
 
 // then = { card }

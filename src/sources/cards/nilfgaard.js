@@ -12,19 +12,18 @@ export const emissary = {
     const selectableCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).filter(card => card.type === 'Bronze').slice(0, 2)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
+  specific: ({ card, specificCard }) => {
     const outIndex = getNextPlayer({index: getIndex({ card }) }).index
     const outDeck = getHolder({ type: 'deck', index: outIndex })
 
     store.dispatch(actions.selectingTo({
       player: getCurrentPlayer({ index: outIndex }),
-      holderTypes: getHolderTypes({ card: selectedCard }),
-      curriedAction: into => ({ out: outDeck, into, card: selectedCard }),
+      holderTypes: getHolderTypes({ card: specificCard }),
+      curriedAction: into => ({ out: outDeck, into, card: specificCard }),
     }))
 
     const fulfilledCards = findCards({ ids: outDeck.cardIds }).filter(card => card.type === 'Bronze').slice(0, 2)
-    const anotherCard = fulfilledCards.find(card => card.id !== selectedCard.id)
+    const anotherCard = fulfilledCards.find(card => card.id !== specificCard.id)
     removeOut({ id: anotherCard.id, holder: outDeck })
     shuffleIn({ id: anotherCard.id, holder: outDeck })
   }
@@ -81,9 +80,8 @@ export const emhyr_var_emreis = {
     const selectableCards = getCards({ players }).filter(c => (c.type === 'Bronze' || c.type === 'Silver') && c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = specificCards[0]
+  specific: ({ card, specificCard }) => {
     const index = getIndex({ card })
-    act({ out: getHolder({ type: findHolderType({ card: selectedCard }), index }), into: getHolder({ type: 'hand', index }), card: selectedCard })
+    act({ out: getHolder({ type: findHolderType({ card: specificCard }), index }), into: getHolder({ type: 'hand', index }), card: specificCard })
   }
 }

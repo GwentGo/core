@@ -259,7 +259,7 @@ class Board extends Component {
     if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
       if (specificCards.length + 1 === selecting.specific.numbers) {
         onSelect = () => {
-          specificSubject.next({ card: selecting.specific.card, specificCards: specificCards.concat(card) })
+          specificSubject.next({ card: selecting.specific.card, specificCard: specificCards.concat(card)[0], specificCards: specificCards.concat(card) })
           this.props.selectingSpecific(null)
           this.setState({ specificCards: [] })
         }

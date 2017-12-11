@@ -32,8 +32,8 @@ export const muzzle = {
     const selectableCards = getCards({ players }).filter(card => (card.type === 'Silver' || card.type === 'Bronze') && calculate({ card }) <= 8)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ card, specificCards }) => {
-    const selectedCard = { ...specificCards[0], isSpy: !specificCards[0].isSpy }
+  specific: ({ card, specificCard }) => {
+    const selectedCard = { ...specificCard, isSpy: !specificCard.isSpy }
     const index = getIndex({ card: selectedCard })
     const type = findHolderType({ card: selectedCard })
 

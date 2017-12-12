@@ -8,7 +8,7 @@ export const clan_brokvar_archer = {
     const selectableCards = getCards({ players })
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 3) }))
   },
-  specific: ({ specificCards }) => {
-    specificCards.forEach(card => demage({ card, value: 1 }))
+  specific: ({ selectedCards }) => {
+    selectedCards.forEach(card => demage({ card, value: 1 }))
   }
 }

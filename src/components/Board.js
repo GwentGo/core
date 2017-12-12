@@ -41,7 +41,7 @@ class Board extends Component {
       hasDone: true,
     },
     round: null,
-    specificCards: [],
+    selectedCards: [],
   }
 
   componentDidMount() {
@@ -253,18 +253,18 @@ class Board extends Component {
 
   onSelect = ({ player, card }) => {
     const { selecting } = this.props
-    const { specificCards } = this.state
+    const { selectedCards } = this.state
 
     let onSelect = null
     if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
-      if (specificCards.length + 1 === selecting.specific.numbers) {
+      if (selectedCards.length + 1 === selecting.specific.numbers) {
         onSelect = () => {
-          specificSubject.next({ card: selecting.specific.card, specificCard: specificCards.concat(card)[0], specificCards: specificCards.concat(card) })
+          specificSubject.next({ card: selecting.specific.card, selectedCard: selectedCards.concat(card)[0], selectedCards: selectedCards.concat(card) })
           this.props.selectingSpecific(null)
-          this.setState({ specificCards: [] })
+          this.setState({ selectedCards: [] })
         }
       } else {
-        onSelect = () => this.setState({ specificCards: specificCards.concat(card) })
+        onSelect = () => this.setState({ selectedCards: selectedCards.concat(card) })
       }
     }
 

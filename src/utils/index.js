@@ -73,9 +73,13 @@ export const demage = ({ card, value }) => {
   card.boosted -= value
 
   if (calculate({ card }) <= 0) {
-    const index = getIndex({ card })
-    act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card: restore({ card }) })
+    destroy({ card })
   }
+}
+
+export const destroy = ({ card }) => {
+  const index = getIndex({ card })
+  act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card: restore({ card }) })
 }
 
 export const restore = ({ card }) => {
@@ -116,11 +120,6 @@ export const consume = ({ card, target, isBoost = true }) => {
 
 export const isBelongTo = ({ card, type }) => {
   return card.attributes && card.attributes.indexOf(type) !== -1
-}
-
-export const destroy = ({ card }) => {
-  const index = getIndex({ card })
-  act({ out: getHolder({ type: findHolderType({ card }), index }), into: getHolder({ type: 'tomb', index }), card })
 }
 
 export const removeOut = ({ id, holder }) => {

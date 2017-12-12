@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -83,5 +83,36 @@ export const emhyr_var_emreis = {
   specific: ({ card, selectedCard }) => {
     const index = getIndex({ card })
     act({ out: getHolder({ type: findHolderType({ card: selectedCard }), index }), into: getHolder({ type: 'hand', index }), card: selectedCard })
+  }
+}
+
+export const vicovaro_medic = {
+  deploy: ({ out, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getCards({ players, holderTypes: ['tomb'] }).filter(card => card.type === 'Bronze' && !isBelongTo({ card, type: 'Special' }))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard }) => {
+    const index = getIndex({ card })
+    store.dispatch(actions.selectingTo({
+      player: getNextPlayer({ index }),
+      holderTypes: getHolderTypes({ card: selectedCard }),
+      curriedAction: into => ({ out: getHolder({ type: 'tomb', index }), into, card: selectedCard }),
+    }))
+  }
+}
+
+export const menno_coehoorn = {
+  deploy: ({ out, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getCards({ players })
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ selectedCard }) => {
+    demage({ card: selectedCard, value: 4 })
+
+    if (selectedCard.isSpy) {
+      destroy({ card: selectedCard })
+    }
   }
 }

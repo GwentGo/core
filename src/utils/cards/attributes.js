@@ -7,7 +7,10 @@ export const specials = {
   },
   emhyr_var_emreis: {
     isDoomed: true,
-  }
+  },
+  vicovaro_medic: {
+    isDoomed: true,
+  },
 }
 
 export const common = card => ({

@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -114,5 +114,16 @@ export const menno_coehoorn = {
     if (selectedCard.isSpy) {
       destroy({ card: selectedCard })
     }
+  }
+}
+
+export const infiltrator = {
+  deploy: ({ card }) => {
+    const players = getPlayers()
+    const selectableCards = getCards({ players }).filter(c => c.isSpy)
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard }) => {
+    store.dispatch(actions.updateCard({ ...selectedCard, isSpy: !selectedCard.isSpy }))
   }
 }

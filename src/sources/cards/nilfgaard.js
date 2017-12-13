@@ -127,3 +127,28 @@ export const infiltrator = {
     store.dispatch(actions.updateCard({ ...selectedCard, isSpy: !selectedCard.isSpy }))
   }
 }
+
+export const rainfarn = {
+  deploy: ({ out, card }) => {
+    const players = [getCurrentPlayer({ index: out.index })]
+    const selectableCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).filter(card => card.isSpy && (card.type === 'Bronze' || card.type === 'Silver'))
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard }) => {
+    const index = getIndex({ card })
+    const out = getHolder({ type: 'deck', index })
+
+    store.dispatch(actions.selectingTo({
+      player: getCurrentPlayer({ index }),
+      holderTypes: getHolderTypes({ card: selectedCard }),
+      curriedAction: into => ({ out, into, card: selectedCard }),
+    }))
+
+    const fulfilledCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).filter(card => card.isSpy && (card.type === 'Bronze' || card.type === 'Silver'))
+    const anotherCards = fulfilledCards.filter(card => card.id !== selectedCard.id)
+    anotherCards.forEach(card => {
+      removeOut({ id: card.id, holder: out })
+      shuffleIn({ id: card.id, holder: out })
+    })
+  }
+}

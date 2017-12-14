@@ -14,7 +14,7 @@ import * as actions from '../actions'
 import * as holders from '../sources/holders'
 import { subscribeActionSubject, turnSubject, subscribeTurnSubject, subscribeWeatherSubject, roundSubject, specificSubject, subscribeSpecificSubject, timerObservable } from '../sources/subjects'
 import { getRandomCards } from '../utils/tools'
-import { act, getHolder, getCards, getNextPlayer, getPlayers, toggleTurn, getHolderTypes, isHolderMatch, findHolderType, isBelongTo, get, syncCardIds, hasDoneSelecting, getIndex } from '../utils'
+import { act, getHolder, getCards, getNextPlayer, getPlayers, toggleTurn, getHolderTypes, isHolderMatch, isBelongTo, get, syncCardIds, hasDoneSelecting, destroy, findCards } from '../utils'
 
 const styles = {
   root: {
@@ -62,8 +62,12 @@ class Board extends Component {
     })
     roundSubject.subscribe(round => {
       this.setState({ round }, () => {
-        this.prepareRound(round)
-        this.clearTable()
+        if (round.sequence > 1) {
+          this.judge()
+          this.clearTable()
+          this.assign({ numbers: round.sequence === 2 ? 2 : 1 })
+        }
+        this.prepare({ round })
       })
     })
   }
@@ -77,15 +81,12 @@ class Board extends Component {
   }
 
   clearTable = () => {
-    getCards({ players: getPlayers() }).forEach(card => {
-      const index = getIndex({ card })
-      act({ out: getHolder({ type: findHolderType({ card }), index }), into: card.isDoomed ? null : getHolder({ type: 'tomb', index }), card })
-    })
+    getCards({ players: getPlayers() }).forEach(card => destroy({ card }))
 
     holders.fighters.concat(holders.archers, holders.throwers).forEach(holder => holder.weather = null)
   }
 
-  prepareRound = round => {
+  prepare = ({ round }) => {
     if (round.sequence === 1) {
       this.setState({replacing: {
         currentIndex: 0,
@@ -94,15 +95,6 @@ class Board extends Component {
         hasDone: false,
       }}, this.replacing)
     } else {
-      this.judge()
-
-      getPlayers().forEach(player => {
-        const deckCards = getCards({ holder: getHolder({ type: 'deck', index: player.index }) })
-        getRandomCards(deckCards, { numbers: round.sequence === 2 ? 2 : 1 }).forEach(card => {
-          this.props.updateCard({ ...card, deckIndex: '', handIndex: player.index })
-        })
-      })
-
       this.setState({
         currentPlayer: null,
         replacing: {
@@ -124,6 +116,18 @@ class Board extends Component {
         values = { ...values, wins: ++player.wins, isWinPrevious: true }
       }
       this.props.updatePlayer({ ...values })
+    })
+  }
+
+  assign = ({ numbers }) => {
+    getPlayers().forEach(player => {
+      const holder = getHolder({ type: 'deck', index: player.index })
+
+      findCards({ ids: holder.cardIds }).slice(0, numbers).forEach(card => {
+        this.props.updateCard({ ...card, deckIndex: '', handIndex: player.index })
+      })
+
+      syncCardIds({ holder })
     })
   }
 

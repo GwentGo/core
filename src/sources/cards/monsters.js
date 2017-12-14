@@ -15,9 +15,9 @@ const isWildHunt = ({ card }) => {
 export const eredin = {
   deploy: ({ out, into }) => {
     const associationCards = origins.filter(card => isWildHunt({ card }) && card.type === 'Bronze').map(card => ({
+      ...card,
       id: uuid(),
       pickingIndex: into.index,
-      ...card,
     }))
     store.dispatch(actions.addCards(associationCards))
 
@@ -192,7 +192,7 @@ export const caranthir = {
     const into = getHolder({ type: findHolderType({ card }), index })
     act({ out, into, card: selectedCard })
 
-    act({ out: { type: 'derivation', index }, into, card: derivatives.generateDerivativeCard({ key: 'frost_hazard' }) })
+    act({ out: { type: 'derivation', index }, into, card: derivatives.generate({ key: 'frost_hazard' }) })
   }
 }
 

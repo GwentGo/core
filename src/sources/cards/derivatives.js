@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { weatherSubject } from '../subjects'
 
-export const generateDerivativeCard = ({ key }) => ({
+export const generate = ({ key }) => ({
   id: uuid(),
   key,
   attributes: ['Special', 'derivative']

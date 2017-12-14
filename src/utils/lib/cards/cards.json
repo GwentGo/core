@@ -1171,7 +1171,26 @@
     "row":"Melee",
     "type":"Silver",
     "name":"The Guardian",
-    "abilities":"Deathwish: Create 2 Lesser Guardians on the top of your opponent's Deck."
+    "abilities":"Deathwish: Create 2 Lesser Guardians on the top of your opponent's Deck.",
+    "rarity": "Epic",
+    "loyalty": "Loyal",
+    "attributes":[
+      "Construct"
+    ]
+  },
+  "lesser_guardians":{
+    "key":"lesser_guardians",
+    "faction":"Nilfgaard",
+    "power":6,
+    "row":"Melee",
+    "type":"Bronze",
+    "name":"Lesser Guardians",
+    "abilities":"No Ability.",
+    "rarity": "Epic",
+    "loyalty": "Loyal",
+    "attributes":[
+      "Construct"
+    ]
   },
   "the_last_wish":{
     "key":"the_last_wish",

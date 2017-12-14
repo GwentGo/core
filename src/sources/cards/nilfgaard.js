@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers, syncCardIds } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -150,5 +150,21 @@ export const rainfarn = {
       removeOut({ id: card.id, holder: out })
       shuffleIn({ id: card.id, holder: out })
     })
+  }
+}
+
+export const the_guardian = {
+  destroyed: ({ out }) => {
+    const holder = getHolder({ type: 'deck', index: getNextPlayer({ index: out.index }).index })
+
+    const card = origins.find(card => card.key === 'lesser_guardians')
+    const cards = Array.from(Array(2).keys()).map(() => ({
+      ...card,
+      id: uuid(),
+      deckIndex: holder.index,
+    }))
+    store.dispatch(actions.addCards(cards))
+
+    syncCardIds({ holder, isShuffleIn: false })
   }
 }

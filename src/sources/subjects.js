@@ -28,8 +28,12 @@ export const thenObservable = Observable.interval(20)
 export const timerObservable = Observable.interval(300)
 
 export const subscribeActionSubject = () => {
-  actionSubject.subscribe(({ out }) => {
+  actionSubject.subscribe(({ out, into }) => {
     syncCardIds({ holder: getHolder({ type: 'deck', index: out.index }) })
+
+    if (into.index !== out.index) {
+      syncCardIds({ holder: getHolder({ type: 'deck', index: into.index }) })
+    }
   })
 
   actionSubject.subscribe(action => {

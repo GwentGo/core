@@ -179,9 +179,7 @@ export const joachim_de_wett = {
         player: getCurrentPlayer({ index: out.index }),
         holderTypes: getHolderTypes({ card: fulfilledCard }),
         curriedAction: into => ({ out: deck, into, card: fulfilledCard }),
-        onSelected: () => {
-          boost({ card: get({ card: fulfilledCard }), value: 10 })
-        },
+        onSelected: () => { boost({ card: get({ card: fulfilledCard }), value: 10 }) },
       }))
     }
   }

@@ -31,7 +31,7 @@ export const subscribeActionSubject = () => {
   actionSubject.subscribe(({ out, into }) => {
     syncCardIds({ holder: getHolder({ type: 'deck', index: out.index }) })
 
-    if (into.index !== out.index) {
+    if (into && into.index !== out.index) {
       syncCardIds({ holder: getHolder({ type: 'deck', index: into.index }) })
     }
   })

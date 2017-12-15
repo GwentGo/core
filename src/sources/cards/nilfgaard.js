@@ -168,3 +168,21 @@ export const the_guardian = {
     syncCardIds({ holder, isShuffleIn: false })
   }
 }
+
+export const joachim_de_wett = {
+  deploy: ({ out, card }) => {
+    const deck = getHolder({ type: 'deck', index: out.index })
+    const fulfilledCard = findCards({ ids: deck.cardIds }).find(card => !card.isSpy && (card.type === 'Bronze' || card.type === 'Silver'))
+
+    if (fulfilledCard) {
+      store.dispatch(actions.selectingTo({
+        player: getCurrentPlayer({ index: out.index }),
+        holderTypes: getHolderTypes({ card: fulfilledCard }),
+        curriedAction: into => ({ out: deck, into, card: fulfilledCard }),
+        onSelected: () => {
+          boost({ card: get({ card: fulfilledCard }), value: 10 })
+        },
+      }))
+    }
+  }
+}

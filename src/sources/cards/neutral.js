@@ -21,8 +21,8 @@ export const swallow_potion = {
     const selectableCards = getCards({ players }).filter(c => c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
-  specific: ({ selectedCards }) => {
-    selectedCards.forEach(card => boost({ card, value: 8 }))
+  specific: ({ selectedCard }) => {
+    boost({ card: selectedCard, value: 8 })
   }
 }
 

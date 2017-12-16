@@ -184,3 +184,25 @@ export const joachim_de_wett = {
     }
   }
 }
+
+export const assassination = {
+  times: 0,
+
+  tableIn: ({ out, into, card }) => {
+    const players = [getNextPlayer({ index: out.index })]
+    const selectableCards = getCards({ players })
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard }) => {
+    demage({ card: selectedCard, value: 8 })
+    assassination.times++
+
+    if (assassination.times < 2) {
+      const players = [getNextPlayer({ index: getIndex({ card }) })]
+      const selectableCards = getCards({ players })
+      store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+    } else {
+      assassination.times = 0
+    }
+  }
+}

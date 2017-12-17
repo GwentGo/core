@@ -11,6 +11,9 @@ export const specials = {
   vicovaro_medic: {
     isDoomed: true,
   },
+  cantarella: {
+    isDoomed: true,
+  }
 }
 
 export const common = card => ({

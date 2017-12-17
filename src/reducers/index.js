@@ -31,6 +31,7 @@ selecting = {
     players: [],
     selectableCards: [],
     numbers: xxx,
+    isUnselect: 'optional: will be set to true when want to unselect this card'
   }
 }
 

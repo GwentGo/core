@@ -134,9 +134,14 @@ export const shuffleIn = ({ id, holder }) => {
   holder.cardIds = cardIds.slice(0, n).concat(id, cardIds.slice(n))
 }
 
-export const addIn = ({ id, holder }) => {
+export const unshiftIn = ({ id, holder }) => {
   const cardIds = holder.cardIds
   holder.cardIds = [id].concat(cardIds)
+}
+
+export const pushIn = ({ id, holder }) => {
+  const cardIds = holder.cardIds
+  holder.cardIds = cardIds.concat(id)
 }
 
 export const syncCardIds = ({ holder, isShuffleIn = true }) => {
@@ -144,7 +149,7 @@ export const syncCardIds = ({ holder, isShuffleIn = true }) => {
   const toRemoveIds = holder.cardIds.reduce((acc, id) => (holderCards.find(card => card.id === id) ? acc : acc.concat(id)), [])
   const toAddIds = holderCards.reduce((acc, card) => (holder.cardIds.find(id => id === card.id) ? acc : acc.concat(card.id)), [])
   toRemoveIds.forEach(id => removeOut({ id, holder }))
-  toAddIds.forEach(id => isShuffleIn ? shuffleIn({ id, holder }) : addIn({ id, holder }))
+  toAddIds.forEach(id => isShuffleIn ? shuffleIn({ id, holder }) : unshiftIn({ id, holder }))
 }
 
 export const findCards = ({ ids }) => {

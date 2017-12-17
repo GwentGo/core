@@ -255,7 +255,7 @@ class Board extends Component {
     return selectableCards.find(c => c.id === card.id)
   }
 
-  onSelect = ({ player, card }) => {
+  onSelect = ({ player, card, isUnselect = false }) => {
     const { selecting } = this.props
     const { selectedCards } = this.state
 
@@ -263,7 +263,7 @@ class Board extends Component {
     if (selecting.specific && this.isPlayerMatchWithSelectingPlayers(player) && selecting.specific.numbers !== 0 && this.isSelectable({ card, selectableCards: selecting.specific.selectableCards })) {
       if (selectedCards.length + 1 === selecting.specific.numbers) {
         onSelect = () => {
-          const specific = { card: selecting.specific.card, selectedCard: selectedCards.concat(card)[0], selectedCards: selectedCards.concat(card) }
+          const specific = { card: selecting.specific.card, selectedCard: selectedCards.concat(card)[0], selectedCards: selectedCards.concat(card), isUnselect }
           this.props.selectingSpecific(null)
           specificSubject.next(specific)
 
@@ -332,7 +332,7 @@ class Board extends Component {
                       const card = deckCards.find(card => card.id === id)
                       return (
                         <Grid key={card.id} item>
-                          <Card card={card} onSelect={this.onSelect({ player, card })} />
+                          <Card card={card} onSelect={this.onSelect({ player, card })} onUnSelect={selecting.specific && selecting.specific.card.key === 'cantarella' ? this.onSelect({ player, card, isUnselect: true }) : null} />
                         </Grid>
                       )
                     })}

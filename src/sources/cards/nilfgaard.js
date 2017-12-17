@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers, syncCardIds } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers, syncCardIds, pushIn } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -203,6 +203,29 @@ export const assassination = {
       store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
     } else {
       assassination.times = 0
+    }
+  }
+}
+
+export const cantarella = {
+  deploy: ({ out, card }) => {
+    const players = [getCurrentPlayer({ index: out.index })]
+    const selectableCards = findCards({ ids: getHolder({ type: 'deck', index: out.index }).cardIds }).slice(0, 1)
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard, isUnselect }) => {
+    const index = getNextPlayer({ index: getIndex({ card }) }).index
+    const deck = getHolder({ type: 'deck', index })
+    const hand = getHolder({ type: 'hand', index })
+
+    if (isUnselect) {
+      removeOut({ id: selectedCard.id, holder: deck })
+      pushIn({ id: selectedCard.id, holder: deck })
+
+      const theTopCard = findCards({ ids: getHolder({ type: 'deck', index }).cardIds })[0]
+      act({ out: deck, into: hand, card: theTopCard })
+    } else {
+      act({ out: deck, into: hand, card: selectedCard })
     }
   }
 }

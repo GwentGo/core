@@ -90,6 +90,10 @@ export const boost = ({ card, value }) => {
   card.boosted += value
 }
 
+export const strengthen = ({ card, value }) => {
+  card.strengthened += value
+}
+
 export const getIndex = ({ card }) => {
   return card[`${findHolderType({ card })}Index`]
 }

@@ -2,7 +2,7 @@ import uuid from 'uuid/v4'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers, syncCardIds, pushIn } from '../../utils'
+import { getCurrentPlayer, getIndex, getHolder, getHolderTypes, removeOut, shuffleIn, findCards, getNextPlayer, boost, get, isEnemy, act, findHolderType, getCards, demage, destroy, isBelongTo, getPlayers, syncCardIds, pushIn, strengthen, calculate } from '../../utils'
 import origins from '../../utils/cards/origins'
 import { actionSubject } from '../subjects'
 
@@ -120,7 +120,7 @@ export const menno_coehoorn = {
 export const infiltrator = {
   deploy: ({ card }) => {
     const players = getPlayers()
-    const selectableCards = getCards({ players }).filter(c => c.isSpy)
+    const selectableCards = getCards({ players }).filter(c => c.id !== card.id)
     store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
   },
   specific: ({ card, selectedCard }) => {
@@ -226,6 +226,21 @@ export const cantarella = {
       act({ out: deck, into: hand, card: theTopCard })
     } else {
       act({ out: deck, into: hand, card: selectedCard })
+    }
+  }
+}
+
+export const nauzicaa_brigade = {
+  deploy: ({ out, card }) => {
+    const players = getPlayers()
+    const selectableCards = getCards({ players }).filter(c => c.isSpy)
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ card, selectedCard }) => {
+    demage({ card: selectedCard, value: 7 })
+
+    if (calculate({ card: selectedCard }) <= 0) {
+      strengthen({ card, value: 4 })
     }
   }
 }

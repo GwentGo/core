@@ -13,7 +13,10 @@ export const specials = {
   },
   cantarella: {
     isDoomed: true,
-  }
+  },
+  clear_skies: {
+    isDoomed: true,
+  },
 }
 
 export const common = card => ({

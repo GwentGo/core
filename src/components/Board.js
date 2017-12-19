@@ -219,7 +219,7 @@ class Board extends Component {
       if (isBelongTo({ card: updatedCard, type: 'derivative' })) {
         act({ out: table, into: null, card: updatedCard })
       } else {
-        act({ out: table, into: getHolder({ type: 'tomb', index: holder.index }), card: updatedCard })
+        destroy({ card: updatedCard })
       }
     } else {
       this.props.selectingTo({ player: getNextPlayer({ index: holder.index }), holderTypes: getHolderTypes({ card }), curriedAction: into => ({ out: holder, into, card }) })

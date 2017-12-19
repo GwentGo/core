@@ -244,3 +244,16 @@ export const nauzicaa_brigade = {
     }
   }
 }
+
+export const vanhemar = {
+  deploy: ({ out }) => {
+    const associationCards = origins.filter(card => card.key === 'biting_frost' || card.key === 'clear_skies').map(card => ({
+      ...card,
+      id: uuid(),
+      pickingIndex: out.index,
+    }))
+    store.dispatch(actions.addCards(associationCards))
+
+    store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['picking'] }))
+  }
+}

@@ -13,11 +13,11 @@ const isWildHunt = ({ card }) => {
 }
 
 export const eredin = {
-  deploy: ({ out, into }) => {
+  deploy: ({ out }) => {
     const associationCards = origins.filter(card => isWildHunt({ card }) && card.type === 'Bronze').map(card => ({
       ...card,
       id: uuid(),
-      pickingIndex: into.index,
+      pickingIndex: out.index,
     }))
     store.dispatch(actions.addCards(associationCards))
 

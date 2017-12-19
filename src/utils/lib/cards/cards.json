@@ -5096,6 +5096,21 @@
       "Hazard"
     ]
   },
+  "clear_skies":{
+    "key":"clear_skies",
+    "faction":"Neutral",
+    "power":0,
+    "row":"Special",
+    "type":"Bronze",
+    "name":"Clear Skies",
+    "abilities":"Doomed.\r\nBoost all Damaged Allies under Hazards by 2 and clear all Hazards from your side.",
+    "rarity":"Common",
+    "loyalty":"",
+    "attributes":[
+      "Special",
+      "Hazard"
+    ]
+  },
   "black_infantry_arbalest":{
     "key":"black_infantry_arbalest",
     "faction":"Nilfgaard",

@@ -72,3 +72,11 @@ export const iris = {
     randomCards.forEach(card => boost({ card, value: 5 }))
   }
 }
+
+export const clear_skies = {
+  tableIn: ({ out }) => {
+    const index = out.index
+    const table = getHolder({ type: 'table', index })
+    act({ out: { type: 'derivation', index }, into: table, card: derivatives.generate({ key: 'sun_hazard' }) })
+  }
+}

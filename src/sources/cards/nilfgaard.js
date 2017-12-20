@@ -247,7 +247,7 @@ export const nauzicaa_brigade = {
 
 export const vanhemar = {
   deploy: ({ out }) => {
-    const associationCards = origins.filter(card => card.key === 'biting_frost' || card.key === 'clear_skies').map(card => ({
+    const associationCards = origins.filter(card => card.key === 'biting_frost' || card.key === 'clear_skies' || card.key === 'overdose').map(card => ({
       ...card,
       id: uuid(),
       pickingIndex: out.index,

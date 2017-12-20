@@ -2,7 +2,7 @@ import Random from 'random-js'
 
 import { store } from '../store'
 import * as actions from '../../actions'
-import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getIndex, findHolderType, calculate, destroy, getCards, calculatePower } from '../../utils'
+import { getNextPlayer, act, getHolder, getCurrentPlayer, boost, getIndex, findHolderType, calculate, destroy, getCards, calculatePower, demage } from '../../utils'
 import * as derivatives from './derivatives'
 
 export const biting_frost = {
@@ -78,5 +78,13 @@ export const clear_skies = {
     const index = out.index
     const table = getHolder({ type: 'table', index })
     act({ out: { type: 'derivation', index }, into: table, card: derivatives.generate({ key: 'sun_hazard' }) })
+  }
+}
+
+export const overdose = {
+  tableIn: ({ out }) => {
+    const cards = getCards({ players: [getNextPlayer({ index: out.index })] })
+    const randomCards = new Random().sample(cards, Math.min(cards.length, 6))
+    randomCards.forEach(card => demage({ card, value: 2 }))
   }
 }

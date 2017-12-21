@@ -257,3 +257,14 @@ export const vanhemar = {
     store.dispatch(actions.selectingFrom({ player: getCurrentPlayer({ index: out.index }), holderTypes: ['picking'] }))
   }
 }
+
+export const ambassador = {
+  deploy: ({ out, into, card }) => {
+    const players = [getCurrentPlayer({ index: out.index })]
+    const selectableCards = getCards({ players })
+    store.dispatch(actions.selectingSpecific({ card, players, selectableCards, numbers: Math.min(selectableCards.length, 1) }))
+  },
+  specific: ({ selectedCard }) => {
+    boost({ card: selectedCard, value: 12 })
+  }
+}
